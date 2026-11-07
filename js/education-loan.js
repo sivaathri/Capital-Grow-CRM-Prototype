@@ -500,12 +500,12 @@ const EducationLoan = (() => {
           </div>
         </div>
 
-        <!-- 4. B COURSE DETAILS -->
+        <!-- 4. COURSE DETAILS -->
         <div class="sec-card">
           <div class="sec-title">
             <span class="sec-num">C</span>
             <div>
-              <h3>B COURSE DETAILS</h3>
+              <h3>COURSE DETAILS</h3>
               <small class="muted">Admission status, study destination, university and proposed course details</small>
             </div>
             <span class="sec-badge">Step 4 of 4</span>
@@ -626,9 +626,8 @@ const EducationLoan = (() => {
           <button type="button" class="btn primary small" id="eduNewFromListBtn" style="padding:10px 16px">+ New Loan Enquiry</button>
         </div>
 
-        ${
-          items.length
-            ? `
+        ${items.length
+        ? `
           <div class="tbl-wrap rcards">
             <table>
               <thead>
@@ -646,8 +645,8 @@ const EducationLoan = (() => {
               </thead>
               <tbody>
                 ${items
-                  .map(
-                    item => `
+          .map(
+            item => `
                   <tr>
                     <td data-l="Enquiry ID"><b style="color:var(--blue)">${escapeHtml(item.id)}</b></td>
                     <td data-l="Date">${escapeHtml(item.date)}</td>
@@ -672,13 +671,13 @@ const EducationLoan = (() => {
                     </td>
                   </tr>
                 `
-                  )
-                  .join('')}
+          )
+          .join('')}
               </tbody>
             </table>
           </div>
         `
-            : `
+        : `
           <div class="empty">
             <h2>No Education Loan enquiries found</h2>
             <p>Try adjusting your search filters or create a new student loan enquiry.</p>
@@ -686,7 +685,7 @@ const EducationLoan = (() => {
             <button class="btn primary" id="eduEmptyNewBtn">+ Create New Loan Enquiry</button>
           </div>
         `
-        }
+      }
       </div>
     `;
   }
@@ -769,9 +768,9 @@ const EducationLoan = (() => {
             </thead>
             <tbody>
               ${(item.education || [])
-                .filter(e => e.exam || e.school)
-                .map(
-                  e => `
+        .filter(e => e.exam || e.school)
+        .map(
+          e => `
                 <tr>
                   <td><b>${escapeHtml(e.exam)}</b></td>
                   <td>${escapeHtml(e.year || '-')}</td>
@@ -779,8 +778,8 @@ const EducationLoan = (() => {
                   <td>${escapeHtml(e.school || '-')}</td>
                 </tr>
               `
-                )
-                .join('')}
+        )
+        .join('')}
             </tbody>
           </table>
 
@@ -796,7 +795,7 @@ const EducationLoan = (() => {
           </div>
 
           <h3 style="font-size:15px;color:var(--navy);margin:16px 0 8px;border-bottom:1.5px solid var(--bd);padding-bottom:6px">
-            B COURSE DETAILS
+            COURSE DETAILS
           </h3>
           <div class="slip-grid">
             <div class="slip-field"><small>Country</small><b>${escapeHtml(item.country === 'Others' ? item.otherCountry : item.country)}</b></div>
