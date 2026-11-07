@@ -14,10 +14,7 @@ const EducationLoan = (() => {
   ];
 
   const DEFAULT_EDU_ROWS = [
-    { exam: '10th / SSC', year: '2019', marks: '88%', school: 'St. Joseph Higher Secondary School' },
-    { exam: '12th / HSC', year: '2021', marks: '85%', school: 'Kendriya Vidyalaya' },
-    { exam: 'Graduation / Degree', year: '2025', marks: '78%', school: 'Anna University (B.Tech CSE)' },
-    { exam: 'Post Graduation', year: '', marks: '', school: '' }
+    { exam: '', year: '', marks: '', school: '' }
   ];
 
   const escapeHtml = (s) =>
@@ -205,7 +202,8 @@ const EducationLoan = (() => {
       maritalStatus: 'Single',
       mobile: '',
       email: '',
-      entranceTest: 'GRE',
+      education: [{ exam: '', year: '', marks: '', school: '' }],
+      entranceTest: 'None',
       entranceScore: '',
       degreeA: '',
       degreeB: '',
@@ -403,12 +401,14 @@ const EducationLoan = (() => {
           </div>
         </div>
 
-        <!-- 3. 12 Educational Details -->
+        <!-- 3. Educational Details
+ -->
         <div class="sec-card">
           <div class="sec-title">
             <span class="sec-num">B</span>
             <div>
-              <h3>12 Educational Details</h3>
+              <h3>Educational Details
+</h3>
               <small class="muted">Academic track record, entrance examination score and degrees obtained</small>
             </div>
             <span class="sec-badge">Step 3 of 4</span>
@@ -435,12 +435,12 @@ const EducationLoan = (() => {
               <tbody id="eduTbody">
                 ${(d.education && d.education.length ? d.education : DEFAULT_EDU_ROWS).map((row, idx) => `
                   <tr>
-                    <td><input type="text" class="edu-exam" value="${escapeHtml(row.exam)}" placeholder="e.g. 10th / Degree"></td>
-                    <td><input type="text" class="edu-year" value="${escapeHtml(row.year)}" placeholder="e.g. 2021"></td>
-                    <td><input type="text" class="edu-marks" value="${escapeHtml(row.marks)}" placeholder="e.g. 85%"></td>
-                    <td><input type="text" class="edu-school" value="${escapeHtml(row.school)}" placeholder="School/College/University"></td>
+                    <td><input type="text" class="edu-exam" value="${escapeHtml(row.exam || '')}" placeholder="Exam / Course (e.g. 10th, 12th, Degree)"></td>
+                    <td><input type="text" class="edu-year" value="${escapeHtml(row.year || '')}" placeholder="Year Completed"></td>
+                    <td><input type="text" class="edu-marks" value="${escapeHtml(row.marks || '')}" placeholder="Marks (%)"></td>
+                    <td><input type="text" class="edu-school" value="${escapeHtml(row.school || '')}" placeholder="School / College / University"></td>
                     <td>
-                      <button type="button" class="tbl-row-del" title="Remove row" onclick="this.closest('tr').remove()">×</button>
+                      <button type="button" class="tbl-row-del" title="Remove row" onclick="window.deleteEduRow(this)">×</button>
                     </td>
                   </tr>
                 `).join('')}
@@ -755,7 +755,8 @@ const EducationLoan = (() => {
           </div>
 
           <h3 style="font-size:15px;color:var(--navy);margin:16px 0 8px;border-bottom:1.5px solid var(--bd);padding-bottom:6px">
-            12 EDUCATIONAL DETAILS
+            Educational Details
+
           </h3>
           <table class="slip-table">
             <thead>
@@ -982,6 +983,17 @@ const EducationLoan = (() => {
       });
     }
 
+    // Helper to delete or clear education row
+    window.deleteEduRow = (btn) => {
+      const tbody = document.getElementById('eduTbody');
+      const row = btn.closest('tr');
+      if (tbody && tbody.children.length > 1) {
+        row.remove();
+      } else if (row) {
+        row.querySelectorAll('input').forEach(i => (i.value = ''));
+      }
+    };
+
     // Add row to education table
     const addEduRowBtn = document.getElementById('addEduRowBtn');
     const eduTbody = document.getElementById('eduTbody');
@@ -989,13 +1001,12 @@ const EducationLoan = (() => {
       addEduRowBtn.onclick = () => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><input type="text" class="edu-exam" placeholder="Exam / Course"></td>
-          <td><input type="text" class="edu-year" placeholder="Year"></td>
-          <td><input type="text" class="edu-marks" placeholder="Marks %"></td>
-          <td><input type="text" class="edu-school" placeholder="School/College/University"></td>
-          <td><button type="button" class="tbl-row-del" title="Remove row">×</button></td>
+          <td><input type="text" class="edu-exam" placeholder="Exam / Course (e.g. 10th, 12th, Degree)"></td>
+          <td><input type="text" class="edu-year" placeholder="Year Completed"></td>
+          <td><input type="text" class="edu-marks" placeholder="Marks (%)"></td>
+          <td><input type="text" class="edu-school" placeholder="School / College / University"></td>
+          <td><button type="button" class="tbl-row-del" title="Remove row" onclick="window.deleteEduRow(this)">×</button></td>
         `;
-        tr.querySelector('.tbl-row-del').onclick = () => tr.remove();
         eduTbody.appendChild(tr);
       };
     }
