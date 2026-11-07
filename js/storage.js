@@ -1,0 +1,6 @@
+const DB={get(k,d){try{return JSON.parse(localStorage.getItem('cg_'+k))??d}catch{return d}},set(k,v){localStorage.setItem('cg_'+k,JSON.stringify(v))}};
+function seed(){if(DB.get('seeded'))return;
+ const n=['Karthik S','Priya V','Sanjay M','Harini R','Vignesh P','Arun Kumar','Nivetha R','Hari Prakash','Divya S','Meera T'],st=['Under Process','Follow-up Due','Sanctioned','Under Process','No Response'],ty=['Education Loan','Insurance (Life)','Education Loan','Insurance (Health)','Education Loan'],emp=['Meena R','Arun K','Kavitha S'],fu=['10 Nov 2026','10 Nov 2026','-','11 Nov 2026','12 Nov 2026'],mob=['9876543210','9841077654','9367788991','9786655443','9500144112'];
+ DB.set('customers',n.map((x,i)=>({id:`CG-2026-${String(1248-i).padStart(5,'0')}`,name:x,mobile:mob[i%5],type:ty[i%5],status:st[i%5],followup:fu[i%5],emp:emp[i%3]})));
+ DB.set('followups',[['10:00 AM','Arun Kumar','Discuss loan documents','#0866C6'],['11:30 AM','Nivetha R','Follow-up on bank response','#FF7900'],['02:00 PM','Hari Prakash','Check application status','#0866C6'],['04:30 PM','Divya S','Insurance plan discussion','#FF7900']].map((f,i)=>({id:i+1,time:f[0],name:f[1],note:f[2],color:f[3]})));
+ DB.set('seeded',1)}

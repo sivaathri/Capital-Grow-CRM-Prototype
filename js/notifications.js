@@ -1,0 +1,4 @@
+function toast(msg,type='ok'){const t=document.createElement('div');t.className='toast '+type;t.textContent=msg;document.getElementById('toasts').append(t);setTimeout(()=>t.remove(),3200)}
+function confirmBox(title,body){return new Promise(res=>{const m=document.getElementById('modal');mTitle.textContent=title;mBody.textContent=body;m.classList.remove('hidden');const done=v=>{m.classList.add('hidden');mOk.onclick=mCancel.onclick=null;res(v)};mOk.onclick=()=>done(true);mCancel.onclick=()=>done(false)})}
+function renderNotifs(){const f=DB.get('followups',[]);notifPanel.innerHTML='<div class="dd"><b>Reminders</b></div>'+f.map(x=>`<div class="dd"><b>${x.time}</b> – ${x.name}<small>${x.note}</small></div>`).join('')}
+function simulateReminder(){const f=DB.get('followups',[]);if(f.length)setTimeout(()=>toast(`Reminder: ${f[0].time} call with ${f[0].name}`),4000)}
