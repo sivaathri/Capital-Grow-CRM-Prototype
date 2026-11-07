@@ -1,5 +1,5 @@
 /* Education Loan Enquiry Styling */
-.edu-wrap{max-width:1100px;margin:0 auto}
+.edu-wrap{width:100%;max-width:none;margin:0}
 .edu-head-bar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}
 .edu-head-bar .title-group h1{font-size:26px;color:var(--navy);display:flex;align-items:center;gap:10px}
 .edu-head-bar .title-group p{color:var(--tx2);margin-top:2px;font-size:13.5px}
