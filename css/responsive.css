@@ -1,5 +1,0 @@
-@media(max-width:1280px){.kpis{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr 1fr}.col-main{grid-column:1/-1}}
-@media(max-width:1024px){.main,.collapsed .main{margin-left:0}.sidebar,.collapsed .sidebar{transform:translateX(-100%);width:272px}.nav-open .sidebar{transform:none}.collapsed .nav-item span,.collapsed .chev,.collapsed .side-art{display:revert}.collapsed .nav-item{justify-content:flex-start}.collapsed .side-logo img{width:100%;object-fit:contain}
- #burger{display:grid}.nav-open .scrim{display:block;position:fixed;inset:0;background:rgba(16,38,77,.45);z-index:35}.topbar{padding:10px 16px}.view{padding:6px 16px 28px}.grid,.rowa{grid-template-columns:1fr}.col-main{grid-column:auto}}
-@media(max-width:768px){.kpis{grid-template-columns:1fr 1fr}.pname{display:none}.login{grid-template-columns:1fr}.login-brand{display:none}.head h1{font-size:24px}}
-@media(max-width:480px){.kpis{grid-template-columns:1fr}.head .acts{width:100%;flex-direction:column}.head .acts>*{width:100%}.dropdown.right{width:calc(100vw - 24px);position:fixed;right:12px;top:64px}.btn,.nav-item,.call{min-height:44px}.toasts{left:12px;right:12px}}
