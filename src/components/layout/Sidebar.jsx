@@ -76,7 +76,7 @@ export const Sidebar = () => {
       {/* Sidebar container */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-white transition-all duration-300 ease-in-out border-r border-cg-border
-          ${isSidebarCollapsed ? 'w-20' : 'w-68'}
+          ${isSidebarCollapsed ? 'w-[76px]' : 'w-[272px]'}
           ${isMobileNavOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >

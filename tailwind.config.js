@@ -27,6 +27,11 @@ export default {
         card: '0 4px 14px rgba(7, 59, 120, 0.07)',
         dropdown: '0 12px 30px rgba(7, 59, 120, 0.15)',
         orange: '0 4px 12px rgba(255, 121, 0, 0.3)',
+      },
+      spacing: {
+        '68': '272px',
+        'sidebar': '272px',
+        'sidebar-collapsed': '76px'
       }
     },
   },
