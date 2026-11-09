@@ -181,7 +181,7 @@ export const CustomersPage = () => {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-cg-orange to-cg-orange-hover hover:brightness-95 shadow-orange transition-all"
           >
             <Plus className="w-4 h-4" />
-            <span>+ Add Customer</span>
+            <span>Add Customer</span>
           </button>
         </div>
       </div>

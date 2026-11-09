@@ -134,9 +134,7 @@ export const PaymentsPage = () => {
             <CreditCard className="w-7 h-7 text-cg-orange" />
             <span>Payments &amp; Commission Settlement</span>
           </h1>
-          <p className="text-sm text-cg-muted mt-0.5">
-            Disbursed Loans Payout Registry: Enter Bank Payout, Customer Payout, and Vendor Payout for each record.
-          </p>
+          
         </div>
 
         <div className="flex items-center gap-2.5">

@@ -321,9 +321,6 @@ export const UserManagementPage = () => {
                   Admin Only
                 </span>
               </h1>
-              <p className="text-xs sm:text-sm text-cg-muted mt-0.5">
-                Staff accounts, role-based access control, branch allocations &amp; counselor performance metrics
-              </p>
             </div>
           </div>
         </div>
@@ -339,14 +336,7 @@ export const UserManagementPage = () => {
             <span>Permissions Matrix</span>
           </button>
 
-          <button
-            type="button"
-            onClick={exportCSV}
-            className="flex items-center gap-1.5 px-3.5 py-2.5 bg-white text-cg-navy hover:bg-gray-50 border border-cg-border rounded-xl text-xs font-bold transition-all shadow-sm"
-          >
-            <Download className="w-4 h-4 text-cg-muted" />
-            <span>Export CSV</span>
-          </button>
+         
 
           <button
             type="button"
@@ -357,7 +347,7 @@ export const UserManagementPage = () => {
             className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cg-orange to-cg-orange-hover text-white rounded-xl text-xs font-bold shadow-orange hover:brightness-105 transition-all"
           >
             <Plus className="w-4 h-4" />
-            <span>+ Add Staff Member</span>
+            <span>Add Staff Member</span>
           </button>
         </div>
       </div>
@@ -379,41 +369,11 @@ export const UserManagementPage = () => {
           </div>
         </div>
 
-        {/* Card 2: Standard Users */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-cg-border shadow-card flex items-center justify-between">
-          <div>
-            <span className="text-[11px] font-bold text-cg-muted uppercase tracking-wider block">Standard Users</span>
-            <div className="text-3xl font-black text-cg-blue mt-0.5">{userCount}</div>
-            <span className="text-[11px] text-cg-muted font-medium mt-1 block">Operations &amp; counselor staff</span>
-          </div>
-          <div className="w-12 h-12 rounded-2xl bg-orange-50 text-cg-orange flex items-center justify-center font-bold">
-            <UserCheck className="w-6 h-6" />
-          </div>
-        </div>
+       
 
-        {/* Card 3: Active Files */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-cg-border shadow-card flex items-center justify-between">
-          <div>
-            <span className="text-[11px] font-bold text-cg-muted uppercase tracking-wider block">Assigned Leads</span>
-            <div className="text-3xl font-black text-emerald-600 mt-0.5">{totalAssignedLeads}</div>
-            <span className="text-[11px] text-cg-muted font-medium mt-1 block">Active pipeline cases</span>
-          </div>
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-            <Briefcase className="w-6 h-6" />
-          </div>
-        </div>
+       
 
-        {/* Card 4: Admins & Branches */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-cg-border shadow-card flex items-center justify-between">
-          <div>
-            <span className="text-[11px] font-bold text-cg-muted uppercase tracking-wider block">Administrators</span>
-            <div className="text-3xl font-black text-purple-600 mt-0.5">{adminCount}</div>
-            <span className="text-[11px] text-purple-700 font-semibold mt-1 block">Full CRM &amp; Payments access</span>
-          </div>
-          <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-            <ShieldCheck className="w-6 h-6" />
-          </div>
-        </div>
+        
       </div>
 
       {/* Main Container: Filter Bar, Sub-tabs & Views */}
@@ -483,18 +443,7 @@ export const UserManagementPage = () => {
               <option value="User">User</option>
             </select>
 
-            <select
-              value={branchFilter}
-              onChange={(e) => setBranchFilter(e.target.value)}
-              className="px-3 py-2 rounded-xl border border-cg-border text-xs text-cg-text bg-white focus:outline-none focus:border-cg-blue font-medium"
-            >
-              <option value="">All Branches</option>
-              {BRANCHES.map((b) => (
-                <option key={b} value={b}>
-                  {b}
-                </option>
-              ))}
-            </select>
+           
 
             {/* View Mode Toggle */}
             <div className="inline-flex bg-gray-100 p-1 rounded-xl gap-1 shrink-0">
@@ -534,10 +483,9 @@ export const UserManagementPage = () => {
                   <tr className="bg-gray-50 border-b border-cg-border text-cg-muted font-bold uppercase tracking-wider">
                     <th className="py-3 px-3">Staff Member</th>
                     <th className="py-3 px-3">Role &amp; Title</th>
-                    <th className="py-3 px-3">Branch Office</th>
+                  
                     <th className="py-3 px-3">Contact Information</th>
-                    <th className="py-3 px-3">Assigned Leads</th>
-                    <th className="py-3 px-3">Performance</th>
+                    
                     <th className="py-3 px-3">Status</th>
                     <th className="py-3 px-3 text-right">Actions</th>
                   </tr>
@@ -586,14 +534,6 @@ export const UserManagementPage = () => {
                           </span>
                         </td>
 
-                        {/* Branch */}
-                        <td className="py-3.5 px-3">
-                          <div className="font-semibold text-cg-navy flex items-center gap-1.5">
-                            <Building className="w-3.5 h-3.5 text-cg-muted shrink-0" />
-                            <span>{u.branch}</span>
-                          </div>
-                          <span className="text-[10px] text-cg-muted block mt-0.5">Joined {u.joinedDate}</span>
-                        </td>
 
                         {/* Contact */}
                         <td className="py-3.5 px-3">
@@ -607,20 +547,8 @@ export const UserManagementPage = () => {
                           </div>
                         </td>
 
-                        {/* Assigned Leads */}
-                        <td className="py-3.5 px-3">
-                          <div className="font-black text-cg-navy text-sm">{u.assignedLeads}</div>
-                          <span className="text-[10px] text-cg-muted block">Active files</span>
-                        </td>
-
-                        {/* Performance */}
-                        <td className="py-3.5 px-3">
-                          <div className="flex items-center gap-1.5">
-                            <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
-                            <span className="font-bold text-emerald-700">{u.conversionRate}</span>
-                          </div>
-                          <span className="text-[10px] text-cg-muted block mt-0.5">Sanction ratio</span>
-                        </td>
+                     
+                       
 
                         {/* Status Toggle */}
                         <td className="py-3.5 px-3" onClick={(e) => e.stopPropagation()}>
@@ -743,10 +671,7 @@ export const UserManagementPage = () => {
 
                     {/* Contact & Branch Info */}
                     <div className="space-y-1.5 text-xs text-cg-text bg-gray-50/70 p-3 rounded-xl border border-gray-100">
-                      <div className="flex items-center gap-2">
-                        <Building className="w-3.5 h-3.5 text-cg-muted shrink-0" />
-                        <span className="font-semibold text-cg-navy">{u.branch}</span>
-                      </div>
+                    
                       <div className="flex items-center gap-2">
                         <Mail className="w-3.5 h-3.5 text-cg-muted shrink-0" />
                         <span className="truncate">{u.email}</span>
@@ -757,17 +682,7 @@ export const UserManagementPage = () => {
                       </div>
                     </div>
 
-                    {/* Stats Strip */}
-                    <div className="grid grid-cols-2 gap-2 text-center text-xs pt-1 border-t border-cg-border">
-                      <div className="p-2 bg-blue-50/50 rounded-xl">
-                        <span className="text-[10px] text-cg-muted font-bold uppercase block">Active Leads</span>
-                        <b className="text-sm font-black text-cg-blue">{u.assignedLeads}</b>
-                      </div>
-                      <div className="p-2 bg-emerald-50/50 rounded-xl">
-                        <span className="text-[10px] text-cg-muted font-bold uppercase block">Conversion</span>
-                        <b className="text-sm font-black text-emerald-700">{u.conversionRate}</b>
-                      </div>
-                    </div>
+                   
 
                     {/* Card Footer Actions */}
                     <div className="flex items-center justify-between text-xs pt-2" onClick={(e) => e.stopPropagation()}>

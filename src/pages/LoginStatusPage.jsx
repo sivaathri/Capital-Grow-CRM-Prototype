@@ -310,9 +310,7 @@ export const LoginStatusPage = () => {
             <Building2 className="w-7 h-7 text-cg-blue" />
             <span>Login Status Details</span>
           </h1>
-          <p className="text-sm text-cg-muted mt-0.5">
-            Bank Application Logins, SM Name mapping &amp; Application Tracking. Click any record to inspect all details.
-          </p>
+         
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -322,7 +320,7 @@ export const LoginStatusPage = () => {
             className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cg-orange to-cg-orange-hover text-white rounded-xl text-xs font-bold shadow-orange hover:brightness-105 transition-all"
           >
             <Plus className="w-4 h-4" />
-            <span>+ Move Lead to Login</span>
+            <span>Move Lead to Login</span>
           </button>
         </div>
       </div>
@@ -386,7 +384,7 @@ export const LoginStatusPage = () => {
               <ChevronRight className="w-4 h-4 text-white/40" />
               <span className="px-2.5 py-1 rounded-lg bg-white/10 text-white/90">2. Lead</span>
               <ChevronRight className="w-4 h-4 text-white/40" />
-              <span className="px-2.5 py-1 rounded-lg bg-cg-orange text-white shadow-orange">3. Login (Bank + SM + App No)</span>
+              <span className="px-2.5 py-1 rounded-lg bg-cg-orange text-white shadow-orange">3. Login </span>
               <ChevronRight className="w-4 h-4 text-white/40" />
               <span className="px-2.5 py-1 rounded-lg bg-white/10 text-white/90">4. Sanction / Decline</span>
               <ChevronRight className="w-4 h-4 text-white/40" />
