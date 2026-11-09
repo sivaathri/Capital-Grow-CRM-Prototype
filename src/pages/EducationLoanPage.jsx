@@ -25,10 +25,14 @@ const COUNTRIES = [
 ];
 
 export const EducationLoanPage = () => {
-  const { educationLoans, addEducationLoan, deleteEducationLoan, route, navigate, confirm } = useApp();
+  const { educationLoans, addEducationLoan, deleteEducationLoan, saveLoginDetails, route, navigate, confirm } = useApp();
 
   const [activeTab, setActiveTab] = useState('form'); // 'form' or 'list'
   const [viewSlipId, setViewSlipId] = useState(null);
+
+  // Quick Login Modal from Education Loan page
+  const [quickLoginModal, setQuickLoginModal] = useState({ isOpen: false, item: null });
+  const [quickLoginData, setQuickLoginData] = useState({ bankName: 'HDFC Credila', smName: '', appNo: '' });
 
   // Search & Filters for All Enquiries list
   const [listSearch, setListSearch] = useState('');
@@ -955,10 +959,11 @@ export const EducationLoanPage = () => {
               onChange={(e) => setListStatus(e.target.value)}
               className="px-3.5 py-2.5 rounded-xl border border-cg-border text-xs font-medium text-cg-text bg-white focus:outline-none focus:border-cg-blue"
             >
-              <option value="">All CRM Statuses</option>
-              <option value="Under Process">Under Process</option>
-              <option value="Sanctioned">Sanctioned</option>
-              <option value="Follow-up Due">Follow-up Due</option>
+              <option value="">All CRM Stages</option>
+              <option value="Lead">Lead</option>
+              <option value="Login">Login</option>
+              <option value="Disbursement">Disbursement</option>
+              <option value="Declined">Declined</option>
             </select>
             <button
               type="button"
@@ -982,65 +987,116 @@ export const EducationLoanPage = () => {
                     <th className="py-3 px-3">Country & Course</th>
                     <th className="py-3 px-3">University</th>
                     <th className="py-3 px-3">Loan Amount</th>
-                    <th className="py-3 px-3">Admission</th>
+                    <th className="py-3 px-3">Stage / Status</th>
                     <th className="py-3 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-cg-border">
-                  {filteredList.map((item) => (
-                    <tr key={item.id} className="hover:bg-cg-light-blue/40 transition-colors">
-                      <td className="py-3 px-3 font-bold text-cg-blue">{item.id}</td>
-                      <td className="py-3 px-3 text-cg-muted">{item.date}</td>
-                      <td className="py-3 px-3">
-                        <span className="font-bold text-cg-navy block">{item.studentName}</span>
-                        <span className="text-[11px] text-cg-muted">{item.consultancyName || 'Direct'}</span>
-                      </td>
-                      <td className="py-3 px-3 text-cg-text">{item.mobile}</td>
-                      <td className="py-3 px-3">
-                        <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-cg-blue border border-blue-100">
-                          {item.country}
-                        </span>
-                        <span className="block text-[11px] text-cg-muted truncate max-w-[180px] mt-0.5">
-                          {item.courseName}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 font-semibold text-cg-navy max-w-[160px] truncate">
-                        {item.university}
-                      </td>
-                      <td className="py-3 px-3 font-bold text-cg-orange">{item.loanAmount}</td>
-                      <td className="py-3 px-3">
-                        <span
-                          className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
-                            item.admissionStatus === 'Confirmed'
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-amber-100 text-amber-800'
-                          }`}
-                        >
-                          {item.admissionStatus === 'Confirmed' ? '✓ Confirmed' : '⌛ Awaited'}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => navigate('education-loan', 'view', item.id)}
-                            className="p-1.5 rounded-lg bg-blue-50 text-cg-blue hover:bg-blue-100 transition-colors"
-                            title="View / Print Slip"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => deleteEducationLoan(item.id)}
-                            className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredList.map((item) => {
+                    const status = item.crmStatus || item.status || 'Lead';
+                    return (
+                      <tr key={item.id} className="hover:bg-cg-light-blue/40 transition-colors">
+                        <td className="py-3 px-3 font-bold text-cg-blue">{item.id}</td>
+                        <td className="py-3 px-3 text-cg-muted">{item.date}</td>
+                        <td className="py-3 px-3">
+                          <span className="font-bold text-cg-navy block">{item.studentName}</span>
+                          <span className="text-[11px] text-cg-muted">{item.consultancyName || 'Direct'}</span>
+                        </td>
+                        <td className="py-3 px-3 text-cg-text">{item.mobile}</td>
+                        <td className="py-3 px-3">
+                          <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-cg-blue border border-blue-100">
+                            {item.country}
+                          </span>
+                          <span className="block text-[11px] text-cg-muted truncate max-w-[180px] mt-0.5">
+                            {item.courseName}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 font-semibold text-cg-navy max-w-[160px] truncate">
+                          {item.university}
+                        </td>
+                        <td className="py-3 px-3 font-bold text-cg-orange">{item.loanAmount}</td>
+                        <td className="py-3 px-3">
+                          {status === 'Lead' && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                              Lead
+                            </span>
+                          )}
+                          {status === 'Login' && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                              In Login
+                            </span>
+                          )}
+                          {status === 'Disbursement' && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                              Disbursement
+                            </span>
+                          )}
+                          {status === 'Declined' && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                              Declined
+                            </span>
+                          )}
+                          {status !== 'Lead' && status !== 'Login' && status !== 'Disbursement' && status !== 'Declined' && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700">
+                              {status}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 px-3 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            {/* If status is Lead, show quick "Move to Login" action */}
+                            {status === 'Lead' && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setQuickLoginData({ bankName: 'HDFC Credila', smName: '', appNo: '' });
+                                  setQuickLoginModal({ isOpen: true, item });
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-cg-orange hover:bg-cg-orange-hover text-white text-[11px] font-bold shadow-orange transition-all"
+                                title="Move this Lead to Bank Login"
+                              >
+                                + Move to Login
+                              </button>
+                            )}
+                            {status === 'Login' && (
+                              <button
+                                type="button"
+                                onClick={() => navigate('login-status')}
+                                className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-bold transition-all"
+                              >
+                                View Login
+                              </button>
+                            )}
+                            {status === 'Disbursement' && (
+                              <button
+                                type="button"
+                                onClick={() => navigate('payments')}
+                                className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-bold transition-all"
+                              >
+                                Payments
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => navigate('education-loan', 'view', item.id)}
+                              className="p-1.5 rounded-lg bg-blue-50 text-cg-blue hover:bg-blue-100 transition-colors"
+                              title="View / Print Slip"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => deleteEducationLoan(item.id)}
+                              className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -1055,6 +1111,97 @@ export const EducationLoanPage = () => {
               >
                 + Create New Loan Enquiry
               </button>
+            </div>
+          )}
+
+          {/* Quick Login Modal from Education Loans table */}
+          {quickLoginModal.isOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in">
+              <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-cg-border space-y-4 animate-scale-up">
+                <div className="flex items-center justify-between border-b border-cg-border pb-3">
+                  <h3 className="text-base font-bold text-cg-navy">
+                    Move to Bank Login: {quickLoginModal.item?.studentName}
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setQuickLoginModal({ isOpen: false, item: null })}
+                    className="text-cg-muted hover:text-cg-text font-bold text-sm"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!quickLoginData.bankName || !quickLoginData.smName || !quickLoginData.appNo) {
+                      return;
+                    }
+                    saveLoginDetails(quickLoginModal.item.id, quickLoginData);
+                    setQuickLoginModal({ isOpen: false, item: null });
+                  }}
+                  className="space-y-3.5"
+                >
+                  <div>
+                    <label className="block text-xs font-bold text-cg-navy mb-1">Bank Name</label>
+                    <select
+                      value={quickLoginData.bankName}
+                      onChange={(e) => setQuickLoginData((prev) => ({ ...prev, bankName: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-xl border border-cg-border text-xs bg-white text-cg-text"
+                    >
+                      <option value="HDFC Credila">HDFC Credila</option>
+                      <option value="State Bank of India (SBI)">State Bank of India (SBI)</option>
+                      <option value="ICICI Bank">ICICI Bank</option>
+                      <option value="Axis Bank">Axis Bank</option>
+                      <option value="Avanse Financial Services">Avanse Financial Services</option>
+                      <option value="InCred Financial Services">InCred Financial Services</option>
+                      <option value="IDFC FIRST Bank">IDFC FIRST Bank</option>
+                      <option value="Bank of Baroda">Bank of Baroda</option>
+                      <option value="Auxilo Finserve">Auxilo Finserve</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-cg-navy mb-1">SM Name (Sales Manager)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Rajesh Kumar"
+                      required
+                      value={quickLoginData.smName}
+                      onChange={(e) => setQuickLoginData((prev) => ({ ...prev, smName: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-xl border border-cg-border text-xs text-cg-text"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-cg-navy mb-1">APP NO (Application Number)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. CRED-2026-99214"
+                      required
+                      value={quickLoginData.appNo}
+                      onChange={(e) => setQuickLoginData((prev) => ({ ...prev, appNo: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-xl border border-cg-border text-xs font-mono font-bold text-cg-navy"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setQuickLoginModal({ isOpen: false, item: null })}
+                      className="px-3 py-2 rounded-xl text-xs font-bold text-cg-muted border border-cg-border"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-cg-blue hover:bg-cg-blue/90 shadow-sm"
+                    >
+                      Save &amp; Set to Login
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           )}
         </div>
@@ -1095,6 +1242,15 @@ const EnquirySlipView = ({ item, onBack }) => {
           Back to Education Loans
         </button>
         <div className="flex items-center gap-2">
+          {(!item.bankName || item.crmStatus === 'Lead' || item.status === 'Lead') && (
+            <button
+              type="button"
+              onClick={() => navigate('login-status')}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cg-orange to-cg-orange-hover shadow-orange"
+            >
+              + Move to Login Details
+            </button>
+          )}
           <button
             type="button"
             onClick={() => window.print()}
@@ -1111,6 +1267,47 @@ const EnquirySlipView = ({ item, onBack }) => {
             Done
           </button>
         </div>
+      </div>
+
+      {/* Lifecycle Status Banner */}
+      <div className="no-print bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-cg-blue text-white flex items-center justify-center font-bold text-sm shrink-0">
+            {item.status === 'Disbursement' ? '5' : item.status === 'Login' ? '3' : '2'}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-cg-navy">CRM Lifecycle Status:</span>
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-cg-blue text-white">
+                {item.status || item.crmStatus || 'Lead'}
+              </span>
+            </div>
+            <p className="text-[11px] text-cg-muted mt-0.5">
+              {item.status === 'Disbursement'
+                ? 'Loan is Sanctioned and Disbursed! Ready for Bank, Customer, and Vendor payout settlement.'
+                : item.status === 'Login'
+                ? `Logged in with ${item.bankName || 'Bank'} (App #${item.appNo || '-'}). Ready for Sanction or Decline.`
+                : 'Enquiry has been registered as a Lead. You can now move this lead to Bank Login status.'}
+            </p>
+          </div>
+        </div>
+        {item.status === 'Disbursement' ? (
+          <button
+            type="button"
+            onClick={() => navigate('payments')}
+            className="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm shrink-0"
+          >
+            Open in Payments &rarr;
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => navigate('login-status')}
+            className="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-cg-blue hover:bg-cg-blue/90 shadow-sm shrink-0"
+          >
+            Manage in Login Status &rarr;
+          </button>
+        )}
       </div>
 
       {/* Official Slip Printable Card */}

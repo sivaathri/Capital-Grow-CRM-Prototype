@@ -11,7 +11,9 @@ import {
   Plus,
   UserPlus,
   Calendar,
-  ArrowUpRight
+  ArrowUpRight,
+  Building2,
+  CreditCard
 } from 'lucide-react';
 
 export const DashboardPage = () => {
@@ -64,11 +66,10 @@ export const DashboardPage = () => {
 
   // Application Donut Segments
   const donutData = [
-    { status: 'Under Process', count: 104, color: '#0866C6' },
-    { status: 'Sanctioned', count: 74, color: '#16a34a' },
-    { status: 'Rejected', count: 33, color: '#ef4444' },
-    { status: 'No Response', count: 41, color: '#FF7900' },
-    { status: 'Closed / Declined', count: 34, color: '#8b5cf6' }
+    { status: 'Lead', count: customers.filter((c) => c.status === 'Lead').length || 1, color: '#0866C6' },
+    { status: 'In Login', count: customers.filter((c) => c.status === 'Login').length || 1, color: '#FF7900' },
+    { status: 'Disbursement', count: customers.filter((c) => c.status === 'Disbursement').length || 2, color: '#16a34a' },
+    { status: 'Declined', count: customers.filter((c) => c.status === 'Declined').length || 1, color: '#ef4444' }
   ];
   const totalApps = donutData.reduce((acc, d) => acc + d.count, 0);
 
@@ -93,8 +94,15 @@ export const DashboardPage = () => {
   // Status badge styling helper
   const getStatusBadge = (status) => {
     switch (status) {
+      case 'Lead':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Login':
+        return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'Disbursement':
       case 'Sanctioned':
         return 'bg-green-100 text-green-700 border-green-200';
+      case 'Declined':
+        return 'bg-rose-100 text-rose-700 border-rose-200';
       case 'Follow-up Due':
         return 'bg-amber-100 text-amber-800 border-amber-200';
       case 'No Response':
@@ -392,39 +400,39 @@ export const DashboardPage = () => {
 
           {/* Quick Actions */}
           <div className="bg-white rounded-2xl p-6 border border-cg-border shadow-card">
-            <h3 className="text-base font-bold text-cg-navy mb-4">Quick Actions</h3>
+            <h3 className="text-base font-bold text-cg-navy mb-4">Pipeline Actions</h3>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
+                onClick={() => navigate('education-loan')}
+                className="p-4 rounded-xl bg-orange-50 hover:bg-orange-100/70 text-cg-orange text-xs font-bold flex flex-col items-center gap-2 text-center transition-colors shadow-sm"
+              >
+                <FileText className="w-6 h-6" />
+                + Loan Enquiry (Lead)
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('login-status')}
+                className="p-4 rounded-xl bg-blue-50 hover:bg-blue-100/70 text-cg-blue text-xs font-bold flex flex-col items-center gap-2 text-center transition-colors shadow-sm"
+              >
+                <Building2 className="w-6 h-6" />
+                Login Status Details
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('payments')}
+                className="p-4 rounded-xl bg-emerald-50 hover:bg-emerald-100/70 text-emerald-700 text-xs font-bold flex flex-col items-center gap-2 text-center transition-colors shadow-sm"
+              >
+                <CreditCard className="w-6 h-6" />
+                Payments &amp; Payouts
+              </button>
+              <button
+                type="button"
                 onClick={() => navigate('customers', 'new')}
-                className="p-4 rounded-xl bg-blue-50 hover:bg-blue-100/70 text-cg-blue text-xs font-bold flex flex-col items-center gap-2 text-center transition-colors"
+                className="p-4 rounded-xl bg-purple-50 hover:bg-purple-100/70 text-purple-700 text-xs font-bold flex flex-col items-center gap-2 text-center transition-colors shadow-sm"
               >
                 <UserPlus className="w-6 h-6" />
                 Add Customer
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('education-loan')}
-                className="p-4 rounded-xl bg-orange-50 hover:bg-orange-100/70 text-cg-orange text-xs font-bold flex flex-col items-center gap-2 text-center transition-colors"
-              >
-                <FileText className="w-6 h-6" />
-                Add Loan Enquiry
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('insurance')}
-                className="p-4 rounded-xl bg-purple-50 hover:bg-purple-100/70 text-purple-700 text-xs font-bold flex flex-col items-center gap-2 text-center transition-colors"
-              >
-                <Shield className="w-6 h-6" />
-                Add Insurance
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('followups')}
-                className="p-4 rounded-xl bg-amber-50 hover:bg-amber-100/70 text-amber-700 text-xs font-bold flex flex-col items-center gap-2 text-center transition-colors"
-              >
-                <Calendar className="w-6 h-6" />
-                Schedule Call
               </button>
             </div>
           </div>

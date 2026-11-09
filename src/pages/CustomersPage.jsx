@@ -14,10 +14,20 @@ import {
   Phone,
   Mail,
   MapPin,
-  GraduationCap
+  GraduationCap,
+  Building2
 } from 'lucide-react';
 
-const STATUS_OPTIONS = ['Under Process', 'Follow-up Due', 'Sanctioned', 'No Response'];
+const STATUS_OPTIONS = [
+  'Lead',
+  'Login',
+  'Disbursement',
+  'Declined',
+  'Under Process',
+  'Follow-up Due',
+  'Sanctioned',
+  'No Response'
+];
 const TYPE_OPTIONS = [
   'Education Loan',
   'Insurance (Life)',
@@ -128,8 +138,15 @@ export const CustomersPage = () => {
 
   const getStatusBadge = (status) => {
     switch (status) {
+      case 'Lead':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Login':
+        return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'Disbursement':
       case 'Sanctioned':
-        return 'bg-green-100 text-green-700 border-green-200';
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 'Declined':
+        return 'bg-rose-100 text-rose-800 border-rose-200';
       case 'Follow-up Due':
         return 'bg-amber-100 text-amber-800 border-amber-200';
       case 'No Response':
@@ -723,9 +740,38 @@ const CustomerProfile = ({ customer, activeTab, setActiveTab, onBack, onEdit, on
             </p>
           </div>
         </div>
-        <span className="inline-block px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 w-fit">
-          {customer.status}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`inline-block px-3.5 py-1.5 rounded-full text-xs font-bold ${getStatusBadge(customer.status)}`}>
+            {customer.status}
+          </span>
+          {customer.status === 'Lead' && (
+            <button
+              type="button"
+              onClick={() => navigate('login-status')}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-cg-orange hover:bg-cg-orange-hover shadow-orange transition-all"
+            >
+              + Move to Login
+            </button>
+          )}
+          {customer.status === 'Login' && (
+            <button
+              type="button"
+              onClick={() => navigate('login-status')}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-cg-blue hover:bg-cg-blue/90 transition-all"
+            >
+              Login Details &rarr;
+            </button>
+          )}
+          {customer.status === 'Disbursement' && (
+            <button
+              type="button"
+              onClick={() => navigate('payments')}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all"
+            >
+              Payments &rarr;
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Profile Tabs */}
@@ -749,30 +795,92 @@ const CustomerProfile = ({ customer, activeTab, setActiveTab, onBack, onEdit, on
       {/* Tab Body */}
       <div className="bg-white rounded-2xl p-6 border border-cg-border shadow-card">
         {activeTab === 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-xs">
-            <div>
-              <span className="text-cg-muted block mb-1 font-medium">Enquiry Type</span>
-              <b className="text-cg-navy text-sm font-bold">{customer.type}</b>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-xs">
+              <div>
+                <span className="text-cg-muted block mb-1 font-medium">Enquiry Type</span>
+                <b className="text-cg-navy text-sm font-bold">{customer.type}</b>
+              </div>
+              <div>
+                <span className="text-cg-muted block mb-1 font-medium">Assigned Counselor</span>
+                <b className="text-cg-navy text-sm font-bold">{customer.emp || '-'}</b>
+              </div>
+              <div>
+                <span className="text-cg-muted block mb-1 font-medium">Country Interested</span>
+                <b className="text-cg-navy text-sm font-bold">{customer.country || 'USA'}</b>
+              </div>
+              <div>
+                <span className="text-cg-muted block mb-1 font-medium">University / College</span>
+                <b className="text-cg-navy text-sm font-bold">{customer.univ || '-'}</b>
+              </div>
+              <div>
+                <span className="text-cg-muted block mb-1 font-medium">Course Interested</span>
+                <b className="text-cg-navy text-sm font-bold">{customer.course || '-'}</b>
+              </div>
+              <div>
+                <span className="text-cg-muted block mb-1 font-medium">Loan Requested</span>
+                <b className="text-cg-orange text-sm font-bold">{customer.loanAmount || '-'}</b>
+              </div>
             </div>
-            <div>
-              <span className="text-cg-muted block mb-1 font-medium">Assigned Counselor</span>
-              <b className="text-cg-navy text-sm font-bold">{customer.emp || '-'}</b>
-            </div>
-            <div>
-              <span className="text-cg-muted block mb-1 font-medium">Country Interested</span>
-              <b className="text-cg-navy text-sm font-bold">{customer.country || 'USA'}</b>
-            </div>
-            <div>
-              <span className="text-cg-muted block mb-1 font-medium">University / College</span>
-              <b className="text-cg-navy text-sm font-bold">{customer.univ || '-'}</b>
-            </div>
-            <div>
-              <span className="text-cg-muted block mb-1 font-medium">Course Interested</span>
-              <b className="text-cg-navy text-sm font-bold">{customer.course || '-'}</b>
-            </div>
-            <div>
-              <span className="text-cg-muted block mb-1 font-medium">Next Follow-up</span>
-              <b className="text-cg-navy text-sm font-bold">{customer.followup || '-'}</b>
+
+            {/* Pipeline & Bank Login Details Section */}
+            <div className="p-4 bg-gradient-to-r from-gray-50 to-blue-50/40 rounded-xl border border-cg-border space-y-3">
+              <div className="flex items-center justify-between border-b border-cg-border pb-2">
+                <span className="text-xs font-bold text-cg-navy uppercase tracking-wider flex items-center gap-1.5">
+                  <Building2 className="w-4 h-4 text-cg-blue" />
+                  Bank Login &amp; Processing Details
+                </span>
+                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${getStatusBadge(customer.status)}`}>
+                  Stage: {customer.status}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                <div>
+                  <span className="text-cg-muted block text-[10px] uppercase font-bold">Partner Bank</span>
+                  <b className="text-cg-navy font-bold">{customer.bankName || 'Not Assigned'}</b>
+                </div>
+                <div>
+                  <span className="text-cg-muted block text-[10px] uppercase font-bold">SM Name (Sales Manager)</span>
+                  <b className="text-cg-navy font-bold">{customer.smName || '-'}</b>
+                </div>
+                <div>
+                  <span className="text-cg-muted block text-[10px] uppercase font-bold">APP NO</span>
+                  <b className="text-cg-navy font-mono font-bold">{customer.appNo || '-'}</b>
+                </div>
+                <div>
+                  <span className="text-cg-muted block text-[10px] uppercase font-bold">Sanction / ROI</span>
+                  <b className="text-emerald-700 font-bold">
+                    {customer.sanctionAmount ? `${customer.sanctionAmount} @ ${customer.interestRate}` : '-'}
+                  </b>
+                </div>
+              </div>
+
+              {customer.declineNotes && (
+                <div className="p-2.5 bg-rose-50 rounded-lg border border-rose-100 text-xs text-rose-800">
+                  <span className="font-bold block">Decline Reason / Notes:</span>
+                  <p className="mt-0.5">{customer.declineNotes}</p>
+                </div>
+              )}
+
+              {customer.status === 'Disbursement' && (
+                <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200 text-xs flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-emerald-900 block">Disbursed Loan Payout Status:</span>
+                    <span className="text-emerald-800 text-[11px]">
+                      {customer.payoutStatus === 'Saved'
+                        ? `Bank: ₹${customer.bankPayout} • Customer: ₹${customer.customerPayout} • Vendor: ₹${customer.vendorPayout}`
+                        : 'Awaiting entry of Bank, Customer, and Vendor payouts in Payments module.'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => navigate('payments')}
+                    className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700"
+                  >
+                    Manage in Payments &rarr;
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

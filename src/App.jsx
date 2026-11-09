@@ -5,6 +5,8 @@ import { Shell } from './components/layout/Shell';
 import { DashboardPage } from './pages/DashboardPage';
 import { CustomersPage } from './pages/CustomersPage';
 import { EducationLoanPage } from './pages/EducationLoanPage';
+import { LoginStatusPage } from './pages/LoginStatusPage';
+import { PaymentsPage } from './pages/PaymentsPage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
 export const App = () => {
@@ -23,6 +25,11 @@ export const App = () => {
       case 'education-loan':
       case 'enquiries':
         return <EducationLoanPage />;
+      case 'login-status':
+      case 'applications':
+        return <LoginStatusPage />;
+      case 'payments':
+        return <PaymentsPage />;
       default:
         return <PlaceholderPage pageId={route.page} />;
     }

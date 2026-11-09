@@ -10,6 +10,7 @@ import {
   BarChart3,
   Settings,
   ChevronDown,
+  Building2,
   X
 } from 'lucide-react';
 
@@ -23,9 +24,10 @@ const NAV_ITEMS = [
     subItems: [
       { id: 'education-loan', label: 'Education Loan' },
       { id: 'insurance', label: 'Insurance' },
-       { id: 'Loans', label: 'Loans' }
+      { id: 'Loans', label: 'Loans' }
     ]
   },
+  { id: 'login-status', label: 'Login Status Details', icon: Building2 },
   { id: 'applications', label: 'Loan Applications', icon: FileText },
   { id: 'banks', label: 'Bank Management', icon: Landmark },
   { id: 'followups', label: 'Follow-ups & Reminders', icon: Clock },
@@ -39,10 +41,14 @@ export const Sidebar = () => {
   const {
     route,
     navigate,
+    customers,
     isSidebarCollapsed,
     isMobileNavOpen,
     setIsMobileNavOpen
   } = useApp();
+
+  const loginCount = customers?.filter((c) => c.status === 'Login').length || 0;
+  const paymentCount = customers?.filter((c) => c.status === 'Disbursement').length || 0;
 
   const [openSub, setOpenSub] = useState(() => {
     return route.page === 'education-loan' || route.page === 'insurance' || route.page === 'enquiries'
@@ -124,6 +130,16 @@ export const Sidebar = () => {
                   {!isSidebarCollapsed && (
                     <>
                       <span className="flex-1 truncate">{item.label}</span>
+                      {item.id === 'login-status' && loginCount > 0 && (
+                        <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-cg-orange text-white shrink-0">
+                          {loginCount}
+                        </span>
+                      )}
+                      {item.id === 'payments' && paymentCount > 0 && (
+                        <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500 text-white shrink-0">
+                          {paymentCount}
+                        </span>
+                      )}
                       {item.subItems && (
                         <ChevronDown
                           className={`w-4 h-4 transition-transform duration-200 ${

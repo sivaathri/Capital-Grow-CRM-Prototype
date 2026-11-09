@@ -123,12 +123,24 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Reset to initial Seed data
+  const resetToSeedData = () => {
+    setCustomers(INITIAL_CUSTOMERS);
+    setEducationLoans(INITIAL_EDUCATION_LOANS);
+    setFollowups(INITIAL_FOLLOWUPS);
+    DB.set('customers', INITIAL_CUSTOMERS);
+    DB.set('education_loans', INITIAL_EDUCATION_LOANS);
+    DB.set('followups', INITIAL_FOLLOWUPS);
+    addToast('Demo database reset to initial state', 'ok');
+  };
+
   // Data Mutations
   const addCustomer = (customerData) => {
     const newCustomer = {
       ...customerData,
       id: customerData.id || `CG-${new Date().getFullYear()}-${String(customers.length + 1249).padStart(5, '0')}`,
       created: customerData.created || new Date().toISOString().slice(0, 10),
+      status: customerData.status || 'Lead',
       followup: customerData.followup || '-'
     };
     setCustomers((prev) => [newCustomer, ...prev]);
@@ -157,12 +169,13 @@ export const AppProvider = ({ children }) => {
       ...enquiry,
       id: enquiry.id || `CG-EDU-${new Date().getFullYear()}-${String(educationLoans.length + 4).padStart(4, '0')}`,
       date: enquiry.date || new Date().toISOString().slice(0, 10),
-      crmStatus: 'Under Process'
+      crmStatus: 'Lead',
+      status: 'Lead'
     };
 
     setEducationLoans((prev) => [newRecord, ...prev]);
 
-    // Sync into Customers
+    // Sync into Customers as Lead
     const existingIdx = customers.findIndex((c) => c.mobile === enquiry.mobile);
     const targetCountry = enquiry.country === 'Others' ? enquiry.otherCountry : enquiry.country;
     const customerRecord = {
@@ -171,7 +184,7 @@ export const AppProvider = ({ children }) => {
       mobile: enquiry.mobile,
       email: enquiry.email,
       type: 'Education Loan',
-      status: 'Under Process',
+      status: 'Lead',
       followup: '15 Nov 2026',
       emp: 'Meena R',
       country: targetCountry,
@@ -183,8 +196,10 @@ export const AppProvider = ({ children }) => {
       address: enquiry.currentAddress,
       highest: enquiry.degreeA || (enquiry.education && enquiry.education[0]?.exam) || '',
       refName: enquiry.consultancyName,
-      src: enquiry.consultancyName.includes('Direct') ? 'Walk-in' : 'Referral',
+      src: enquiry.consultancyName?.includes('Direct') ? 'Walk-in' : 'Referral',
       created: enquiry.date,
+      loanAmount: enquiry.loanAmount,
+      eduLoanId: newRecord.id,
       remarks: `Education Loan enquiry for ${enquiry.courseName} at ${enquiry.university} (${targetCountry}). Loan amount: ${enquiry.loanAmount}. Father: ${enquiry.fatherName}.`
     };
 
@@ -198,7 +213,7 @@ export const AppProvider = ({ children }) => {
       setCustomers((prev) => [customerRecord, ...prev]);
     }
 
-    addToast(`Education Loan Enquiry Submitted! ID: ${newRecord.id}`, 'ok');
+    addToast(`Education Loan Enquiry Submitted! Status changed to Lead (ID: ${newRecord.id})`, 'ok');
     return newRecord;
   };
 
@@ -208,6 +223,148 @@ export const AppProvider = ({ children }) => {
       setEducationLoans((prev) => prev.filter((item) => item.id !== id));
       addToast('Enquiry deleted', 'ok');
     }
+  };
+
+  // Pipeline Flow Actions
+  const saveLoginDetails = (recordId, { bankName, smName, appNo }) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const updates = {
+      status: 'Login',
+      crmStatus: 'Login',
+      bankName: bankName?.trim(),
+      smName: smName?.trim(),
+      appNo: appNo?.trim(),
+      loginDate: today
+    };
+
+    setCustomers((prev) =>
+      prev.map((c) =>
+        c.id === recordId || c.mobile === recordId || c.eduLoanId === recordId
+          ? { ...c, ...updates }
+          : c
+      )
+    );
+
+    setEducationLoans((prev) =>
+      prev.map((item) =>
+        item.id === recordId || item.mobile === recordId
+          ? { ...item, ...updates }
+          : item
+      )
+    );
+
+    addToast(`Login details saved: ${bankName} (App #${appNo})`, 'ok');
+  };
+
+  const declineLoan = (recordId, { notes }) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const updates = {
+      status: 'Declined',
+      crmStatus: 'Declined',
+      declineNotes: notes?.trim() || 'No reason specified',
+      declineDate: today
+    };
+
+    setCustomers((prev) =>
+      prev.map((c) =>
+        c.id === recordId || c.mobile === recordId || c.eduLoanId === recordId
+          ? { ...c, ...updates }
+          : c
+      )
+    );
+
+    setEducationLoans((prev) =>
+      prev.map((item) =>
+        item.id === recordId || item.mobile === recordId
+          ? { ...item, ...updates }
+          : item
+      )
+    );
+
+    addToast('Loan application declined with notes recorded.', 'ok');
+  };
+
+  const sanctionLoan = (recordId, { loanAmount, interestRate }) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const formattedAmount = String(loanAmount).startsWith('₹') ? String(loanAmount) : `₹ ${loanAmount}`;
+    const formattedRate = String(interestRate).includes('%') ? String(interestRate) : `${interestRate}%`;
+
+    const updates = {
+      status: 'Disbursement',
+      crmStatus: 'Disbursement',
+      sanctionAmount: formattedAmount,
+      loanAmount: formattedAmount,
+      interestRate: formattedRate,
+      sanctionDate: today,
+      payoutStatus: 'Pending'
+    };
+
+    setCustomers((prev) =>
+      prev.map((c) =>
+        c.id === recordId || c.mobile === recordId || c.eduLoanId === recordId
+          ? { ...c, ...updates }
+          : c
+      )
+    );
+
+    setEducationLoans((prev) =>
+      prev.map((item) =>
+        item.id === recordId || item.mobile === recordId
+          ? { ...item, ...updates }
+          : item
+      )
+    );
+
+    addToast(`Loan Sanctioned (${formattedAmount} @ ${formattedRate})! Status moved to Disbursement. Record is now ready in Payments.`, 'ok');
+  };
+
+  const savePayoutDetails = (recordId, { bankPayout, customerPayout, vendorPayout, payoutNotes }) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const updates = {
+      bankPayout: String(bankPayout || '0').replace(/[^0-9.]/g, ''),
+      customerPayout: String(customerPayout || '0').replace(/[^0-9.]/g, ''),
+      vendorPayout: String(vendorPayout || '0').replace(/[^0-9.]/g, ''),
+      payoutNotes: payoutNotes || '',
+      payoutStatus: 'Saved',
+      payoutSavedAt: today
+    };
+
+    setCustomers((prev) =>
+      prev.map((c) =>
+        c.id === recordId || c.mobile === recordId || c.eduLoanId === recordId
+          ? { ...c, ...updates }
+          : c
+      )
+    );
+
+    setEducationLoans((prev) =>
+      prev.map((item) =>
+        item.id === recordId || item.mobile === recordId
+          ? { ...item, ...updates }
+          : item
+      )
+    );
+
+    addToast('Payout details (Bank, Customer, Vendor) saved successfully!', 'ok');
+  };
+
+  const changeRecordStatus = (recordId, newStatus) => {
+    const updates = { status: newStatus, crmStatus: newStatus };
+    setCustomers((prev) =>
+      prev.map((c) =>
+        c.id === recordId || c.mobile === recordId || c.eduLoanId === recordId
+          ? { ...c, ...updates }
+          : c
+      )
+    );
+    setEducationLoans((prev) =>
+      prev.map((item) =>
+        item.id === recordId || item.mobile === recordId
+          ? { ...item, ...updates }
+          : item
+      )
+    );
+    addToast(`Status updated to ${newStatus}`, 'ok');
   };
 
   const simulateCall = (name) => {
@@ -229,6 +386,12 @@ export const AppProvider = ({ children }) => {
         educationLoans,
         addEducationLoan,
         deleteEducationLoan,
+        saveLoginDetails,
+        declineLoan,
+        sanctionLoan,
+        savePayoutDetails,
+        changeRecordStatus,
+        resetToSeedData,
         followups,
         simulateCall,
         toasts,
@@ -248,4 +411,3 @@ export const AppProvider = ({ children }) => {
 };
 
 export const useApp = () => useContext(AppContext);
-

@@ -2,7 +2,22 @@ export const DB = {
   get(key, fallback) {
     try {
       const item = localStorage.getItem('cg_' + key);
-      return item ? JSON.parse(item) : fallback;
+      if (!item) return fallback;
+      const parsed = JSON.parse(item);
+      // Auto-migrate / normalize legacy statuses if needed
+      if (Array.isArray(parsed)) {
+        return parsed.map((entry) => {
+          if (entry.crmStatus === 'Under Process' || entry.status === 'Under Process') {
+            return {
+              ...entry,
+              status: entry.status === 'Under Process' ? 'Lead' : entry.status,
+              crmStatus: entry.crmStatus === 'Under Process' ? 'Lead' : entry.crmStatus
+            };
+          }
+          return entry;
+        });
+      }
+      return parsed;
     } catch {
       return fallback;
     }
@@ -17,21 +32,217 @@ export const DB = {
 };
 
 export const INITIAL_CUSTOMERS = [
-  { id: 'CG-2026-01248', name: 'Karthik S', mobile: '9876543210', email: 'karthik.s@gmail.com', type: 'Education Loan', status: 'Under Process', followup: '10 Nov 2026', emp: 'Meena R', country: 'USA', univ: 'Northeastern University', course: 'MS in Computer Science', adm: 'Offer Received', gender: 'Male', pin: '600020', address: '42, 2nd Main Road, Gandhi Nagar, Adyar', created: '2026-10-15', refName: 'Apex Overseas Education', src: 'Referral', remarks: 'GRE 324. Fast-track loan sanction required.' },
-  { id: 'CG-2026-01247', name: 'Priya V', mobile: '9841077654', email: 'priya.v@gmail.com', type: 'Insurance (Life)', status: 'Follow-up Due', followup: '10 Nov 2026', emp: 'Arun K', country: 'UK', univ: 'King\'s College London', course: 'LLM International Law', adm: 'Admitted', gender: 'Female', pin: '600018', address: '12 Alwarpet Street, Chennai', created: '2026-10-18', refName: 'Walk-in', src: 'Walk-in', remarks: 'Overseas student medical and life cover.' },
-  { id: 'CG-2026-01246', name: 'Sanjay M', mobile: '9367788991', email: 'sanjay.m@outlook.com', type: 'Education Loan', status: 'Sanctioned', followup: '-', emp: 'Kavitha S', country: 'Canada', univ: 'University of Windsor', course: 'M.Eng Automotive', adm: 'Offer Received', gender: 'Male', pin: '600034', address: '15/B Lake View Road, Nungambakkam', created: '2026-10-20', refName: 'Global Edutech', src: 'Referral', remarks: 'Loan of ₹32 Lakhs sanctioned via HDFC Credila.' },
-  { id: 'CG-2026-01245', name: 'Harini R', mobile: '9786655443', email: 'harini.r@gmail.com', type: 'Insurance (Health)', status: 'Under Process', followup: '11 Nov 2026', emp: 'Meena R', country: 'Australia', univ: 'University of Melbourne', course: 'Master of Finance', adm: 'Applied', gender: 'Female', pin: '600040', address: 'Anna Nagar West, Chennai', created: '2026-10-22', refName: 'Direct', src: 'Website', remarks: 'OSHC Health Insurance policy enquiry.' },
-  { id: 'CG-2026-01244', name: 'Vignesh P', mobile: '9500144112', email: 'vignesh.p@gmail.com', type: 'Education Loan', status: 'Under Process', followup: '12 Nov 2026', emp: 'Arun K', country: 'UK', univ: 'University of Manchester', course: 'MSc Data Science', adm: 'Applied', gender: 'Male', pin: '600042', address: 'Velachery, Chennai', created: '2026-10-25', refName: 'Direct', src: 'Social Media', remarks: 'Awaiting loan approval response from SBI.' },
-  { id: 'CG-2026-01243', name: 'Arun Kumar', mobile: '9876543210', email: 'arunk@gmail.com', type: 'Education Loan', status: 'Follow-up Due', followup: '12 Nov 2026', emp: 'Kavitha S', country: 'USA', univ: 'UT Dallas', course: 'MS Business Analytics', adm: 'Applied', gender: 'Male', pin: '600017', address: 'T. Nagar, Chennai', created: '2026-10-28', refName: 'IDP', src: 'Referral', remarks: 'Document collection in progress.' },
-  { id: 'CG-2026-01242', name: 'Nivetha R', mobile: '9841077654', email: 'nivetha.r@gmail.com', type: 'Insurance (Life)', status: 'Under Process', followup: '13 Nov 2026', emp: 'Meena R', country: 'Germany', univ: 'TU Munich', course: 'MSc Informatics', adm: 'Admitted', gender: 'Female', pin: '600083', address: 'Ashok Nagar, Chennai', created: '2026-10-29', refName: 'Walk-in', src: 'Walk-in', remarks: 'German blocked account + insurance package.' },
-  { id: 'CG-2026-01241', name: 'Hari Prakash', mobile: '9367788991', email: 'hari.p@yahoo.com', type: 'Education Loan', status: 'No Response', followup: '-', emp: 'Arun K', country: 'Ireland', univ: 'Trinity College Dublin', course: 'MSc AI', adm: 'Applied', gender: 'Male', pin: '600096', address: 'Perungudi, Chennai', created: '2026-10-30', refName: 'Website', src: 'Campaign', remarks: 'Followed up 3 times, not reachable.' }
+  {
+    id: 'CG-2026-01248',
+    name: 'Karthik S',
+    mobile: '9876543210',
+    email: 'karthik.s@gmail.com',
+    type: 'Education Loan',
+    status: 'Lead',
+    followup: '10 Nov 2026',
+    emp: 'Meena R',
+    country: 'USA',
+    univ: 'Northeastern University',
+    course: 'MS in Computer Science',
+    adm: 'Offer Received',
+    gender: 'Male',
+    pin: '600020',
+    address: '42, 2nd Main Road, Gandhi Nagar, Adyar',
+    created: '2026-10-15',
+    refName: 'Apex Overseas Education',
+    src: 'Referral',
+    loanAmount: '₹ 45,00,000',
+    remarks: 'GRE 324. Fast-track loan sanction required.'
+  },
+  {
+    id: 'CG-2026-01244',
+    name: 'Vignesh P',
+    mobile: '9500144112',
+    email: 'vignesh.p@gmail.com',
+    type: 'Education Loan',
+    status: 'Login',
+    followup: '12 Nov 2026',
+    emp: 'Arun K',
+    country: 'UK',
+    univ: 'University of Manchester',
+    course: 'MSc Data Science',
+    adm: 'Applied',
+    gender: 'Male',
+    pin: '600042',
+    address: 'Velachery, Chennai',
+    created: '2026-10-25',
+    refName: 'Direct',
+    src: 'Social Media',
+    loanAmount: '₹ 50,00,000',
+    bankName: 'HDFC Credila',
+    smName: 'Rajesh Kumar',
+    appNo: 'CRED-2026-44112',
+    loginDate: '2026-11-01',
+    remarks: 'File submitted to HDFC Credila. Verification ongoing.'
+  },
+  {
+    id: 'CG-2026-01246',
+    name: 'Sanjay M',
+    mobile: '9367788991',
+    email: 'sanjay.m@outlook.com',
+    type: 'Education Loan',
+    status: 'Disbursement',
+    followup: '-',
+    emp: 'Kavitha S',
+    country: 'Canada',
+    univ: 'University of Windsor',
+    course: 'M.Eng Automotive',
+    adm: 'Offer Received',
+    gender: 'Male',
+    pin: '600034',
+    address: '15/B Lake View Road, Nungambakkam',
+    created: '2026-10-20',
+    refName: 'Global Edutech',
+    src: 'Referral',
+    loanAmount: '₹ 32,00,000',
+    bankName: 'SBI',
+    smName: 'Anand Sharma',
+    appNo: 'SBI-EL-93677',
+    loginDate: '2026-10-22',
+    sanctionAmount: '₹ 32,00,000',
+    interestRate: '9.25%',
+    sanctionDate: '2026-11-02',
+    payoutStatus: 'Saved',
+    bankPayout: '48000',
+    customerPayout: '10000',
+    vendorPayout: '15000',
+    payoutSavedAt: '2026-11-05',
+    remarks: 'Sanctioned via SBI. 1st disbursement processed.'
+  },
+  {
+    id: 'CG-2026-01245',
+    name: 'Harini R',
+    mobile: '9786655443',
+    email: 'harini.r@gmail.com',
+    type: 'Education Loan',
+    status: 'Disbursement',
+    followup: '11 Nov 2026',
+    emp: 'Meena R',
+    country: 'Australia',
+    univ: 'University of Melbourne',
+    course: 'Master of Finance',
+    adm: 'Offer Received',
+    gender: 'Female',
+    pin: '600040',
+    address: 'Anna Nagar West, Chennai',
+    created: '2026-10-22',
+    refName: 'Direct',
+    src: 'Website',
+    loanAmount: '₹ 28,00,000',
+    bankName: 'Avanse Financial',
+    smName: 'Vikram Patel',
+    appNo: 'AVN-2026-7882',
+    loginDate: '2026-10-28',
+    sanctionAmount: '₹ 28,00,000',
+    interestRate: '10.15%',
+    sanctionDate: '2026-11-06',
+    payoutStatus: 'Pending',
+    remarks: 'Sanction letter issued by Avanse. Ready for payout entry.'
+  },
+  {
+    id: 'CG-2026-01241',
+    name: 'Hari Prakash',
+    mobile: '9367788998',
+    email: 'hari.p@yahoo.com',
+    type: 'Education Loan',
+    status: 'Declined',
+    followup: '-',
+    emp: 'Arun K',
+    country: 'Ireland',
+    univ: 'Trinity College Dublin',
+    course: 'MSc AI',
+    adm: 'Applied',
+    gender: 'Male',
+    pin: '600096',
+    address: 'Perungudi, Chennai',
+    created: '2026-10-30',
+    refName: 'Website',
+    src: 'Campaign',
+    loanAmount: '₹ 38,00,000',
+    bankName: 'ICICI Bank',
+    smName: 'Deepa Nair',
+    appNo: 'ICI-EL-88991',
+    loginDate: '2026-11-01',
+    declineNotes: 'Co-applicant CIBIL score is 610 with multiple recent defaults and insufficient collateral valuation.',
+    declineDate: '2026-11-04',
+    remarks: 'Declined due to CIBIL & collateral deficiency.'
+  },
+  {
+    id: 'CG-2026-01247',
+    name: 'Priya V',
+    mobile: '9841077654',
+    email: 'priya.v@gmail.com',
+    type: 'Insurance (Life)',
+    status: 'Follow-up Due',
+    followup: '10 Nov 2026',
+    emp: 'Arun K',
+    country: 'UK',
+    univ: "King's College London",
+    course: 'LLM International Law',
+    adm: 'Admitted',
+    gender: 'Female',
+    pin: '600018',
+    address: '12 Alwarpet Street, Chennai',
+    created: '2026-10-18',
+    refName: 'Walk-in',
+    src: 'Walk-in',
+    remarks: 'Overseas student medical and life cover.'
+  },
+  {
+    id: 'CG-2026-01243',
+    name: 'Arun Kumar',
+    mobile: '9876543212',
+    email: 'arunk@gmail.com',
+    type: 'Education Loan',
+    status: 'Lead',
+    followup: '12 Nov 2026',
+    emp: 'Kavitha S',
+    country: 'USA',
+    univ: 'UT Dallas',
+    course: 'MS Business Analytics',
+    adm: 'Applied',
+    gender: 'Male',
+    pin: '600017',
+    address: 'T. Nagar, Chennai',
+    created: '2026-10-28',
+    refName: 'IDP',
+    src: 'Referral',
+    loanAmount: '₹ 40,00,000',
+    remarks: 'Document collection in progress.'
+  },
+  {
+    id: 'CG-2026-01242',
+    name: 'Nivetha R',
+    mobile: '9841077655',
+    email: 'nivetha.r@gmail.com',
+    type: 'Insurance (Life)',
+    status: 'Lead',
+    followup: '13 Nov 2026',
+    emp: 'Meena R',
+    country: 'Germany',
+    univ: 'TU Munich',
+    course: 'MSc Informatics',
+    adm: 'Admitted',
+    gender: 'Female',
+    pin: '600083',
+    address: 'Ashok Nagar, Chennai',
+    created: '2026-10-29',
+    refName: 'Walk-in',
+    src: 'Walk-in',
+    remarks: 'German blocked account + insurance package.'
+  }
 ];
 
 export const INITIAL_FOLLOWUPS = [
   { id: 1, time: '10:00 AM', name: 'Arun Kumar', note: 'Discuss loan documents & collateral', color: '#0866C6' },
   { id: 2, time: '11:30 AM', name: 'Nivetha R', note: 'Follow-up on German bank response', color: '#FF7900' },
-  { id: 3, time: '02:00 PM', name: 'Hari Prakash', note: 'Check loan application status', color: '#0866C6' },
-  { id: 4, time: '04:30 PM', name: 'Divya S', note: 'Overseas travel health insurance discussion', color: '#FF7900' }
+  { id: 3, time: '02:00 PM', name: 'Hari Prakash', note: 'Check alternative NBFC options after ICICI decline', color: '#0866C6' },
+  { id: 4, time: '04:30 PM', name: 'Harini R', note: 'Finalize Avanse disbursement and customer payout', color: '#FF7900' }
 ];
 
 export const INITIAL_EDUCATION_LOANS = [
@@ -70,7 +281,8 @@ export const INITIAL_EDUCATION_LOANS = [
     courseName: 'MS in Computer Science',
     country: 'USA',
     otherCountry: '',
-    crmStatus: 'Under Process'
+    crmStatus: 'Lead',
+    status: 'Lead'
   },
   {
     id: 'CG-EDU-2026-0002',
@@ -107,7 +319,20 @@ export const INITIAL_EDUCATION_LOANS = [
     courseName: 'Master of Engineering (Automotive)',
     country: 'Canada',
     otherCountry: '',
-    crmStatus: 'Sanctioned'
+    crmStatus: 'Disbursement',
+    status: 'Disbursement',
+    bankName: 'SBI',
+    smName: 'Anand Sharma',
+    appNo: 'SBI-EL-93677',
+    loginDate: '2026-10-22',
+    sanctionAmount: '₹ 32,00,000',
+    interestRate: '9.25%',
+    sanctionDate: '2026-11-02',
+    payoutStatus: 'Saved',
+    bankPayout: '48000',
+    customerPayout: '10000',
+    vendorPayout: '15000',
+    payoutSavedAt: '2026-11-05'
   },
   {
     id: 'CG-EDU-2026-0003',
@@ -144,7 +369,57 @@ export const INITIAL_EDUCATION_LOANS = [
     courseName: 'MSc Data Science & Analytics',
     country: 'UK',
     otherCountry: '',
-    crmStatus: 'Under Process'
+    crmStatus: 'Login',
+    status: 'Login',
+    bankName: 'HDFC Credila',
+    smName: 'Rajesh Kumar',
+    appNo: 'CRED-2026-44112',
+    loginDate: '2026-11-01'
+  },
+  {
+    id: 'CG-EDU-2026-0004',
+    date: '2026-11-03',
+    consultancyName: 'Direct',
+    loanAmount: '₹ 28,00,000',
+    studentName: 'Harini R',
+    fatherName: 'Ramachandran K',
+    motherName: 'Revathi R',
+    dob: '2002-04-18',
+    gender: 'Female',
+    currentAddress: 'Anna Nagar West, Chennai',
+    currentPincode: '600040',
+    permAddress: 'Anna Nagar West, Chennai',
+    permPincode: '600040',
+    residenceType: 'Self Owned',
+    monthlyRent: '',
+    maritalStatus: 'Single',
+    mobile: '9786655443',
+    email: 'harini.r@gmail.com',
+    education: [
+      { exam: '10th / SSC', year: '2018', marks: '94%', school: 'Bhavans Rajaji Vidyashram' },
+      { exam: '12th / HSC', year: '2020', marks: '91%', school: 'Bhavans Rajaji Vidyashram' },
+      { exam: 'B.Com', year: '2023', marks: '8.7 CGPA', school: 'Stella Maris College' }
+    ],
+    entranceTest: 'GMAT',
+    entranceScore: '680',
+    degreeA: 'Bachelor of Commerce',
+    degreeB: '',
+    degreeC: '',
+    admissionStatus: 'Confirmed',
+    courseDuration: '2 Years',
+    university: 'University of Melbourne',
+    courseName: 'Master of Finance',
+    country: 'Australia',
+    otherCountry: '',
+    crmStatus: 'Disbursement',
+    status: 'Disbursement',
+    bankName: 'Avanse Financial',
+    smName: 'Vikram Patel',
+    appNo: 'AVN-2026-7882',
+    loginDate: '2026-10-28',
+    sanctionAmount: '₹ 28,00,000',
+    interestRate: '10.15%',
+    sanctionDate: '2026-11-06',
+    payoutStatus: 'Pending'
   }
 ];
-
