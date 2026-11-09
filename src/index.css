@@ -11,20 +11,53 @@
   }
 }
 
-/* Custom scrollbars */
+/* Custom scrollbars with Capital Grow Signature Brand Orange */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #FF7900 #f1f5f9;
+}
+
 ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #FF7900 0%, #ff8f1f 100%);
+  border-radius: 9999px;
+  border: 1.5px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #e56c00 0%, #FF7900 100%);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #cc6100;
+}
+
+/* Inner scrollbars for modals and data tables */
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #FF7900;
   border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #ff8f1f;
 }
 
 @media print {

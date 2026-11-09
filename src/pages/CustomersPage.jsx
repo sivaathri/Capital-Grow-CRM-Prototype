@@ -40,6 +40,26 @@ const ADM_OPTIONS = ['Not Applied', 'Applied', 'Offer Received', 'Admitted'];
 const EMP_OPTIONS = ['Meena R', 'Arun K', 'Kavitha S'];
 const COUNTRY_OPTIONS = ['USA', 'UK', 'Canada', 'Australia', 'Germany', 'Ireland', 'Other'];
 
+export const getStatusBadge = (status) => {
+  switch (status) {
+    case 'Lead':
+      return 'bg-blue-100 text-blue-800 border-blue-200';
+    case 'Login':
+      return 'bg-amber-100 text-amber-800 border-amber-200';
+    case 'Disbursement':
+    case 'Sanctioned':
+      return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+    case 'Declined':
+      return 'bg-rose-100 text-rose-800 border-rose-200';
+    case 'Follow-up Due':
+      return 'bg-amber-100 text-amber-800 border-amber-200';
+    case 'No Response':
+      return 'bg-red-100 text-red-700 border-red-200';
+    default:
+      return 'bg-blue-100 text-blue-700 border-blue-200';
+  }
+};
+
 export const CustomersPage = () => {
   const { customers, addCustomer, updateCustomer, deleteCustomer, route, navigate, addToast } = useApp();
 
@@ -134,26 +154,6 @@ export const CustomersPage = () => {
     link.download = `capital_grow_customers_${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     addToast(`Exported ${filtered.length} customers to CSV`, 'ok');
-  };
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'Lead':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Login':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'Disbursement':
-      case 'Sanctioned':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      case 'Declined':
-        return 'bg-rose-100 text-rose-800 border-rose-200';
-      case 'Follow-up Due':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'No Response':
-        return 'bg-red-100 text-red-700 border-red-200';
-      default:
-        return 'bg-blue-100 text-blue-700 border-blue-200';
-    }
   };
 
   return (
@@ -687,6 +687,7 @@ const CustomerForm = ({ customer, onCancel, onSubmit }) => {
 // Subcomponent: Customer Profile Tabbed View
 // ----------------------------------------------------
 const CustomerProfile = ({ customer, activeTab, setActiveTab, onBack, onEdit, onDelete }) => {
+  const { navigate } = useApp();
   const tabs = [
     'Overview',
     'Personal Information',

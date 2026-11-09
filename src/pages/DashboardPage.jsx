@@ -292,8 +292,131 @@ export const DashboardPage = () => {
         </div>
       </div>
 
-     
-   
+      {/* Recent Enquiries & Follow-ups Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Active Applications */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-cg-border shadow-card space-y-4">
+          <div className="flex items-center justify-between border-b border-cg-border pb-3">
+            <div>
+              <h3 className="text-base font-bold text-cg-navy">Recent Customer Enquiries &amp; Applications</h3>
+              <p className="text-xs text-cg-muted">Active leads flowing through the loan and insurance pipeline</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('login-status')}
+              className="text-xs font-bold text-cg-blue hover:underline flex items-center gap-1"
+            >
+              <span>View All in Login Status</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs min-w-[550px]">
+              <thead>
+                <tr className="text-cg-muted font-bold uppercase text-[10px] tracking-wider border-b border-gray-100 pb-2">
+                  <th className="py-2">Customer / ID</th>
+                  <th className="py-2">Target Destination</th>
+                  <th className="py-2">Loan Amount</th>
+                  <th className="py-2">Current Stage</th>
+                  <th className="py-2 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {customers.slice(0, 5).map((c) => (
+                  <tr key={c.id} className="hover:bg-blue-50/40 transition-colors">
+                    <td className="py-3">
+                      <b className="text-cg-navy block font-bold">{c.name}</b>
+                      <span className="text-[11px] text-cg-muted font-mono">{c.id} • {c.mobile}</span>
+                    </td>
+                    <td className="py-3">
+                      <span className="font-semibold text-cg-navy block">{c.univ || c.course || 'University'}</span>
+                      <span className="text-[11px] text-cg-muted">{c.country || 'USA'}</span>
+                    </td>
+                    <td className="py-3">
+                      <b className="text-cg-orange font-bold text-xs">{c.loanAmount || '₹ 40,00,000'}</b>
+                    </td>
+                    <td className="py-3">
+                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getStatusBadge(c.status)}`}>
+                        {c.status}
+                      </span>
+                    </td>
+                    <td className="py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (c.eduLoanId) {
+                            navigate('education-loan', 'view', c.eduLoanId);
+                          } else {
+                            navigate('login-status');
+                          }
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-cg-blue font-bold text-[11px] transition-colors"
+                      >
+                        View File
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Today's Counselor Follow-up Schedule */}
+        <div className="bg-white rounded-2xl p-6 border border-cg-border shadow-card flex flex-col justify-between space-y-4">
+          <div>
+            <div className="flex items-center justify-between border-b border-cg-border pb-3">
+              <div>
+                <h3 className="text-base font-bold text-cg-navy flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-cg-orange" />
+                  <span>Today's Follow-ups</span>
+                </h3>
+                <p className="text-xs text-cg-muted">Scheduled client calls &amp; verification reminders</p>
+              </div>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-cg-orange">
+                {followups.length} Due
+              </span>
+            </div>
+
+            <div className="space-y-3 mt-4">
+              {followups.map((f) => (
+                <div
+                  key={f.id}
+                  className="p-3 rounded-xl border border-gray-100 bg-gray-50/70 hover:bg-white hover:border-blue-200 transition-all space-y-1.5 shadow-none hover:shadow-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[11px] font-bold text-cg-blue px-2 py-0.5 rounded bg-blue-50 border border-blue-100">
+                      {f.time}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => simulateCall(f.name)}
+                      className="flex items-center gap-1 text-[11px] font-bold text-cg-blue hover:underline p-1 rounded hover:bg-blue-50"
+                      title="Call customer"
+                    >
+                      <Phone className="w-3 h-3 text-cg-orange" />
+                      <span>Call</span>
+                    </button>
+                  </div>
+                  <div>
+                    <b className="text-xs font-bold text-cg-navy block">{f.name}</b>
+                    <p className="text-[11px] text-cg-muted leading-tight mt-0.5">{f.note}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => navigate('customers')}
+            className="w-full py-2.5 rounded-xl border border-cg-border hover:bg-gray-50 text-xs font-bold text-cg-navy transition-colors text-center"
+          >
+            Open Full Customer CRM &rarr;
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
