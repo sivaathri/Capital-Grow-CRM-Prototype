@@ -282,7 +282,29 @@ export const INITIAL_EDUCATION_LOANS = [
     country: 'USA',
     otherCountry: '',
     crmStatus: 'Lead',
-    status: 'Lead'
+    status: 'Lead',
+    // FORM 2: CO-APPLICANT DETAILS
+    coAppRelationship: 'Father',
+    coAppRelationshipOther: '',
+    coAppName: 'Sundaramoorthy K',
+    coAppMobile: '9840112233',
+    coAppEmail: 'sundaramoorthy.k@gmail.com',
+    // FORM 2: EMPLOYMENT/BUSINESS DETAILS OF CO-APPLICANT
+    coAppOccupation: 'Employed',
+    coAppOccupationOther: '',
+    coAppEmployerName: 'Larsen & Toubro Ltd (L&T)',
+    coAppDesignation: 'General Manager (Operations)',
+    coAppOfficialEmail: 'sundaram.k@lntecc.com',
+    coAppGrossIncome: '₹ 1,85,000',
+    coAppNetIncome: '₹ 1,48,000',
+    coAppYearsInEmployment: '16 Years',
+    // FORM 2: STUDENT REFERENCE
+    refName: 'Dr. V. Ramanathan',
+    refAddress: '12, Gandhi Nagar 1st Main Rd, Adyar, Chennai - 600020',
+    refMobile: '9840887766',
+    refEmail: 'v.ramanathan@annauniv.edu',
+    refDate: '2026-11-06',
+    studentSignature: 'Karthik S'
   },
   {
     id: 'CG-EDU-2026-0002',
@@ -332,7 +354,29 @@ export const INITIAL_EDUCATION_LOANS = [
     bankPayout: '48000',
     customerPayout: '10000',
     vendorPayout: '15000',
-    payoutSavedAt: '2026-11-05'
+    payoutSavedAt: '2026-11-05',
+    // FORM 2: CO-APPLICANT DETAILS
+    coAppRelationship: 'Father',
+    coAppRelationshipOther: '',
+    coAppName: 'Manickam P',
+    coAppMobile: '9367711223',
+    coAppEmail: 'manickam.p@gmail.com',
+    // FORM 2: EMPLOYMENT/BUSINESS DETAILS OF CO-APPLICANT
+    coAppOccupation: 'Self Employed',
+    coAppOccupationOther: '',
+    coAppEmployerName: 'Manickam Auto Components & Tools',
+    coAppDesignation: 'Proprietor / Managing Director',
+    coAppOfficialEmail: 'info@manickamauto.com',
+    coAppGrossIncome: '₹ 2,40,000',
+    coAppNetIncome: '₹ 1,90,000',
+    coAppYearsInEmployment: '18 Years',
+    // FORM 2: STUDENT REFERENCE
+    refName: 'Prof. K. Venkatesh',
+    refAddress: 'PSG College of Technology, Peelamedu, Coimbatore - 641004',
+    refMobile: '9443211223',
+    refEmail: 'k.venkatesh@psgtech.edu',
+    refDate: '2026-11-05',
+    studentSignature: 'Sanjay M'
   },
   {
     id: 'CG-EDU-2026-0003',
@@ -374,7 +418,29 @@ export const INITIAL_EDUCATION_LOANS = [
     bankName: 'HDFC Credila',
     smName: 'Rajesh Kumar',
     appNo: 'CRED-2026-44112',
-    loginDate: '2026-11-01'
+    loginDate: '2026-11-01',
+    // FORM 2: CO-APPLICANT DETAILS
+    coAppRelationship: 'Mother',
+    coAppRelationshipOther: '',
+    coAppName: 'Meenakshi P',
+    coAppMobile: '9500199881',
+    coAppEmail: 'meenakshi.p@gmail.com',
+    // FORM 2: EMPLOYMENT/BUSINESS DETAILS OF CO-APPLICANT
+    coAppOccupation: 'Professional',
+    coAppOccupationOther: '',
+    coAppEmployerName: 'Apollo Hospitals Clinical Research',
+    coAppDesignation: 'Senior Medical Specialist (Doctor)',
+    coAppOfficialEmail: 'dr.meenakshi@apollo.com',
+    coAppGrossIncome: '₹ 2,15,000',
+    coAppNetIncome: '₹ 1,72,000',
+    coAppYearsInEmployment: '15 Years',
+    // FORM 2: STUDENT REFERENCE
+    refName: 'K. Senthil Kumar',
+    refAddress: '45 Velachery Main Road, Chennai - 600042',
+    refMobile: '9500122334',
+    refEmail: 'senthil.k@gmail.com',
+    refDate: '2026-11-04',
+    studentSignature: 'Vignesh P'
   },
   {
     id: 'CG-EDU-2026-0004',
@@ -420,6 +486,28 @@ export const INITIAL_EDUCATION_LOANS = [
     sanctionAmount: '₹ 28,00,000',
     interestRate: '10.15%',
     sanctionDate: '2026-11-06',
-    payoutStatus: 'Pending'
+    payoutStatus: 'Pending',
+    // FORM 2: CO-APPLICANT DETAILS
+    coAppRelationship: 'Brother',
+    coAppRelationshipOther: '',
+    coAppName: 'Karthik Ramachandran',
+    coAppMobile: '9786611220',
+    coAppEmail: 'karthik.r@infosys.com',
+    // FORM 2: EMPLOYMENT/BUSINESS DETAILS OF CO-APPLICANT
+    coAppOccupation: 'Employed',
+    coAppOccupationOther: '',
+    coAppEmployerName: 'Infosys Limited',
+    coAppDesignation: 'Lead Consultant (Fintech)',
+    coAppOfficialEmail: 'karthik_r02@infosys.com',
+    coAppGrossIncome: '₹ 1,65,000',
+    coAppNetIncome: '₹ 1,32,000',
+    coAppYearsInEmployment: '7 Years',
+    // FORM 2: STUDENT REFERENCE
+    refName: 'Mrs. S. Shanthi',
+    refAddress: '88 4th Avenue, Anna Nagar West, Chennai - 600040',
+    refMobile: '9786633445',
+    refEmail: 'shanthi.s@gmail.com',
+    refDate: '2026-11-03',
+    studentSignature: 'Harini R'
   }
 ];

@@ -30,7 +30,7 @@ export const PlaceholderPage = ({ pageId }) => {
         </div>
         <h2 className="text-lg font-bold text-cg-navy mb-2">{info.title} is coming next</h2>
         <p className="text-xs text-cg-muted leading-relaxed mb-6">
-          The Dashboard, Customers module, and the complete Education Loan Enquiry workflow are fully active in this React build.
+          The Dashboard, Customers, Education Loan Enquiries, Login Status Details, Payments &amp; Commissions, and User Management modules are fully active in this CRM build.
         </p>
         <button
           type="button"

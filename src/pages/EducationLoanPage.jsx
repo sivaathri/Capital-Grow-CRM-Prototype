@@ -9,10 +9,20 @@ import {
   Check,
   Search,
   ArrowLeft,
+  ArrowRight,
   Shield,
   Building,
+  Building2,
   User,
-  GraduationCap
+  Users,
+  GraduationCap,
+  Briefcase,
+  UserCheck,
+  Mail,
+  Phone,
+  Calendar,
+  Sparkles,
+  FileCheck
 } from 'lucide-react';
 
 const COUNTRIES = [
@@ -24,10 +34,29 @@ const COUNTRIES = [
   { code: 'Others', flag: '🌐', name: 'Others.' }
 ];
 
+const CO_APP_RELATIONSHIPS = [
+  'Father',
+  'Mother',
+  'Brother',
+  'Sister',
+  'Spouse',
+  'Self',
+  'Relative (Specify)'
+];
+
+const CO_APP_OCCUPATIONS = [
+  'Employed',
+  'Self Employed',
+  'Professional (i.e. Lawyer, Doctor, CA, etc.)',
+  'Retired',
+  'Others (Specify)'
+];
+
 export const EducationLoanPage = () => {
   const { educationLoans, addEducationLoan, deleteEducationLoan, saveLoginDetails, route, navigate, confirm } = useApp();
 
   const [activeTab, setActiveTab] = useState('form'); // 'form' or 'list'
+  const [formStep, setFormStep] = useState(1); // 1 = Form 1: Student Details & Academics, 2 = Form 2: Co-Applicant & References
   const [viewSlipId, setViewSlipId] = useState(null);
 
   // Quick Login Modal from Education Loan page
@@ -42,6 +71,7 @@ export const EducationLoanPage = () => {
   // Form State
   const todayStr = new Date().toISOString().slice(0, 10);
   const initialFormState = {
+    // FORM 1: Student & Academic Details
     date: todayStr,
     consultancyName: '',
     loanAmount: '',
@@ -72,7 +102,32 @@ export const EducationLoanPage = () => {
     university: '',
     courseName: '',
     country: 'USA',
-    otherCountry: ''
+    otherCountry: '',
+
+    // FORM 2: CO-APPLICANT DETAILS
+    coAppRelationship: 'Father',
+    coAppRelationshipOther: '',
+    coAppName: '',
+    coAppMobile: '',
+    coAppEmail: '',
+
+    // FORM 2: EMPLOYMENT/BUSINESS DETAILS OF CO-APPLICANT
+    coAppOccupation: 'Employed',
+    coAppOccupationOther: '',
+    coAppEmployerName: '',
+    coAppDesignation: '',
+    coAppOfficialEmail: '',
+    coAppGrossIncome: '',
+    coAppNetIncome: '',
+    coAppYearsInEmployment: '',
+
+    // FORM 2: STUDENT REFERENCE
+    refName: '',
+    refAddress: '',
+    refMobile: '',
+    refEmail: '',
+    refDate: todayStr,
+    studentSignature: ''
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -142,11 +197,9 @@ export const EducationLoanPage = () => {
     });
   };
 
-  // Form Submit Handler
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Validation for Form 1 before proceeding to Form 2
+  const validateForm1 = () => {
     const errs = {};
-
     if (!formData.studentName.trim()) errs.studentName = 'Please enter student full name.';
     if (!formData.fatherName.trim()) errs.fatherName = "Please enter father's name.";
     if (!formData.mobile.trim() || !/^[6-9]\d{9}$/.test(formData.mobile)) {
@@ -164,9 +217,30 @@ export const EducationLoanPage = () => {
     if (formData.currentPincode && !/^\d{6}$/.test(formData.currentPincode)) {
       errs.currentPincode = 'Pincode must be 6 digits.';
     }
+    return errs;
+  };
+
+  // Move from Form 1 to Form 2
+  const handleProceedToForm2 = () => {
+    const errs = validateForm1();
+    if (Object.keys(errs).length > 0) {
+      setFormErrors(errs);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    setFormErrors({});
+    setFormStep(2);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Form Submit Handler (Executed only from Form 2)
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const errs = validateForm1();
 
     if (Object.keys(errs).length) {
       setFormErrors(errs);
+      setFormStep(1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -183,6 +257,7 @@ export const EducationLoanPage = () => {
     });
 
     setFormData(initialFormState);
+    setFormStep(1);
     navigate('education-loan', 'view', newRecord.id);
   };
 
@@ -191,6 +266,7 @@ export const EducationLoanPage = () => {
     if (ok) {
       setFormData(initialFormState);
       setFormErrors({});
+      setFormStep(1);
     }
   };
 
@@ -251,8 +327,55 @@ export const EducationLoanPage = () => {
         /* ENQUIRY FORM VIEW                                              */
         /* ============================================================== */
         <form onSubmit={handleSubmit} noValidate className="space-y-6">
-          {/* STEP 1: General & Enquiry Header */}
-          <div className="bg-white rounded-2xl p-6 border border-cg-border shadow-card space-y-4">
+          {/* Form 1 vs Form 2 Dual Form Switcher */}
+          <div className="bg-white rounded-2xl p-2.5 sm:p-3 border border-cg-border shadow-card flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="inline-flex bg-gray-100 p-1.5 rounded-xl w-full sm:w-auto gap-1">
+              <button
+                type="button"
+                onClick={() => setFormStep(1)}
+                className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                  formStep === 1
+                    ? 'bg-white text-cg-navy shadow-sm'
+                    : 'text-cg-muted hover:text-cg-text'
+                }`}
+              >
+                <span className="w-5 h-5 rounded-full bg-cg-navy text-white text-[10px] flex items-center justify-center font-bold">
+                  1
+                </span>
+                <span>Form 1: Student Details &amp; Academics</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleProceedToForm2}
+                className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                  formStep === 2
+                    ? 'bg-white text-cg-navy shadow-sm'
+                    : 'text-cg-muted hover:text-cg-text'
+                }`}
+              >
+                <span className="w-5 h-5 rounded-full bg-cg-orange text-white text-[10px] flex items-center justify-center font-bold">
+                  2
+                </span>
+                <span>Form 2: Co-Applicant, Employment &amp; Reference</span>
+                {Boolean(formData.coAppName || formData.coAppMobile) && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                )}
+              </button>
+            </div>
+
+            <div className="text-xs text-cg-muted font-medium flex items-center gap-2 px-2">
+              <span className="w-2 h-2 rounded-full bg-cg-orange animate-pulse" />
+              <span>Step-by-step: <b>Form 1</b> &rarr; <b>Form 2</b> &rarr; <b>Submit</b></span>
+            </div>
+          </div>
+
+          {/* ============================================================== */}
+          {/* VIEW A: FORM 1 (STUDENT DETAILS & ACADEMICS)                   */}
+          {/* ============================================================== */}
+          {formStep === 1 && (
+            <div className="space-y-6">
+              {/* STEP 1: General & Enquiry Header */}
+              <div className="bg-white rounded-2xl p-6 border border-cg-border shadow-card space-y-4">
             <div className="flex items-center justify-between border-b border-cg-border pb-3">
               <div className="flex items-center gap-3">
                 <span className="w-7 h-7 rounded-full bg-gradient-to-r from-cg-orange to-cg-orange-hover text-white text-xs font-bold flex items-center justify-center">
@@ -900,30 +1023,458 @@ export const EducationLoanPage = () => {
               </div>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Sticky Submit Bar */}
-          <div className="sticky bottom-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/95 backdrop-blur-md border border-cg-border rounded-2xl shadow-dropdown">
-            <div className="flex items-center gap-2 text-xs text-cg-muted">
-              <Shield className="w-4 h-4 text-cg-orange" />
-              <span>All student details are saved into <b>Capital Grow CRM</b></span>
+      {/* ============================================================== */}
+      {/* VIEW B: FORM 2 (CO-APPLICANT, EMPLOYMENT & REFERENCE DETAILS)  */}
+      {/* ============================================================== */}
+      {formStep === 2 && (
+        <div className="space-y-6 animate-fade-in">
+          {/* SECTION C: CO-APPLICANT DETAILS */}
+          <div className="bg-white rounded-2xl p-6 border border-cg-border shadow-card space-y-4">
+            <div className="flex items-center justify-between border-b border-cg-border pb-3">
+              <div className="flex items-center gap-3">
+                <span className="w-7 h-7 rounded-full bg-cg-navy text-white text-xs font-bold flex items-center justify-center">
+                  C
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-cg-navy uppercase tracking-wide">
+                    CO-APPLICANT DETAILS
+                  </h3>
+                  <p className="text-xs text-cg-muted">
+                    Co-borrower identity, contact information &amp; relationship with the student
+                  </p>
+                </div>
+              </div>
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-cg-orange">
+                Form 2 · Section C
+              </span>
             </div>
-            <div className="flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={handleReset}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold text-cg-text bg-white hover:bg-gray-50 border border-cg-border shadow-sm transition-all"
-              >
-                Reset Form
-              </button>
-              <button
-                type="submit"
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cg-orange to-cg-orange-hover hover:brightness-95 shadow-orange transition-all"
-              >
-                <Check className="w-4 h-4" />
-                <span>Submit Education Loan Enquiry</span>
-              </button>
+
+            <div className="space-y-4">
+              {/* 1. Relationship With Student */}
+              <div>
+                <label className="block text-xs font-bold text-cg-navy mb-2">
+                  1. Relationship With Student: *
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {CO_APP_RELATIONSHIPS.map((rel) => {
+                    const isSelected = formData.coAppRelationship === rel;
+                    return (
+                      <button
+                        key={rel}
+                        type="button"
+                        onClick={() => handleFieldChange('coAppRelationship', rel)}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-2 ${
+                          isSelected
+                            ? 'bg-blue-50 text-cg-blue border-cg-blue shadow-sm'
+                            : 'bg-white text-cg-text border-cg-border hover:bg-gray-50'
+                        }`}
+                      >
+                        <span
+                          className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[9px] ${
+                            isSelected ? 'bg-cg-blue text-white border-cg-blue' : 'border-gray-300'
+                          }`}
+                        >
+                          {isSelected && '✓'}
+                        </span>
+                        <span>{rel}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {formData.coAppRelationship === 'Relative (Specify)' && (
+                  <div className="mt-3 max-w-md">
+                    <label className="block text-xs font-semibold text-cg-navy mb-1">
+                      Specify Relationship (e.g. Maternal Uncle, Paternal Aunt, Grandfather): *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.coAppRelationshipOther}
+                      onChange={(e) => handleFieldChange('coAppRelationshipOther', e.target.value)}
+                      placeholder="Specify relation"
+                      className="w-full px-3.5 py-2 rounded-xl border border-cg-border text-xs focus:outline-none focus:border-cg-blue"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* 2. Name, 3. Mobile No., 4. E-mail ID */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-gray-100">
+                <div>
+                  <label className="block text-xs font-bold text-cg-navy mb-1.5">
+                    2. Name: *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.coAppName}
+                    onChange={(e) => handleFieldChange('coAppName', e.target.value)}
+                    placeholder="Full name of Co-Applicant"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-cg-navy mb-1.5">
+                    3. Mobile No.: *
+                  </label>
+                  <input
+                    type="tel"
+                    maxLength={10}
+                    value={formData.coAppMobile}
+                    onChange={(e) => handleFieldChange('coAppMobile', e.target.value)}
+                    placeholder="10-digit mobile number"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-cg-navy mb-1.5">
+                    4. E-mail ID: *
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.coAppEmail}
+                    onChange={(e) => handleFieldChange('coAppEmail', e.target.value)}
+                    placeholder="coapplicant@example.com"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                  />
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* SECTION D: EMPLOYMENT / BUSINESS DETAILS OF CO-APPLICANT */}
+          <div className="bg-white rounded-2xl p-6 border border-cg-border shadow-card space-y-4">
+            <div className="flex items-center justify-between border-b border-cg-border pb-3">
+              <div className="flex items-center gap-3">
+                <span className="w-7 h-7 rounded-full bg-cg-navy text-white text-xs font-bold flex items-center justify-center">
+                  D
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-cg-navy uppercase tracking-wide">
+                    EMPLOYMENT / BUSINESS DETAILS OF CO-APPLICANT
+                  </h3>
+                  <p className="text-xs text-cg-muted">
+                    Income source, employer, designation, and financial track record
+                  </p>
+                </div>
+              </div>
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-cg-orange">
+                Form 2 · Section D
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {/* 1. Occupation */}
+              <div>
+                <label className="block text-xs font-bold text-cg-navy mb-2">
+                  1. Occupation: *
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {CO_APP_OCCUPATIONS.map((occ) => {
+                    const isSelected = formData.coAppOccupation === occ;
+                    return (
+                      <button
+                        key={occ}
+                        type="button"
+                        onClick={() => handleFieldChange('coAppOccupation', occ)}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-2 ${
+                          isSelected
+                            ? 'bg-blue-50 text-cg-blue border-cg-blue shadow-sm'
+                            : 'bg-white text-cg-text border-cg-border hover:bg-gray-50'
+                        }`}
+                      >
+                        <span
+                          className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[9px] ${
+                            isSelected ? 'bg-cg-blue text-white border-cg-blue' : 'border-gray-300'
+                          }`}
+                        >
+                          {isSelected && '✓'}
+                        </span>
+                        <span>{occ}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {formData.coAppOccupation === 'Others (Specify)' && (
+                  <div className="mt-3 max-w-md">
+                    <label className="block text-xs font-semibold text-cg-navy mb-1">
+                      Specify Occupation: *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.coAppOccupationOther}
+                      onChange={(e) => handleFieldChange('coAppOccupationOther', e.target.value)}
+                      placeholder="e.g. Agriculture, Real Estate, Consultant"
+                      className="w-full px-3.5 py-2 rounded-xl border border-cg-border text-xs focus:outline-none focus:border-cg-blue"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* 2 to 7 Employment Details */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2 border-t border-gray-100">
+                <div>
+                  <label className="block text-xs font-bold text-cg-navy mb-1.5">
+                    2. Name of the Employer / Business: *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.coAppEmployerName}
+                    onChange={(e) => handleFieldChange('coAppEmployerName', e.target.value)}
+                    placeholder="e.g. Tata Consultancy Services / Own Firm"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-cg-navy mb-1.5">
+                    3. Designation / Profession: *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.coAppDesignation}
+                    onChange={(e) => handleFieldChange('coAppDesignation', e.target.value)}
+                    placeholder="e.g. Senior Manager, Director, Advocate"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-cg-navy mb-1.5">
+                    4. Official E-mail:
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.coAppOfficialEmail}
+                    onChange={(e) => handleFieldChange('coAppOfficialEmail', e.target.value)}
+                    placeholder="name@company.com"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-cg-navy mb-1.5">
+                    5. Gross Monthly Salary / Income: *
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cg-muted font-bold text-sm">₹</span>
+                    <input
+                      type="text"
+                      value={formData.coAppGrossIncome}
+                      onChange={(e) => handleFieldChange('coAppGrossIncome', e.target.value)}
+                      placeholder="e.g. 1,50,000"
+                      className="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-cg-navy mb-1.5">
+                    6. Net Monthly Salary / Income: *
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cg-muted font-bold text-sm">₹</span>
+                    <input
+                      type="text"
+                      value={formData.coAppNetIncome}
+                      onChange={(e) => handleFieldChange('coAppNetIncome', e.target.value)}
+                      placeholder="e.g. 1,20,000"
+                      className="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-cg-navy mb-1.5">
+                    7. No. of Years in Current Employment / Business: *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.coAppYearsInEmployment}
+                    onChange={(e) => handleFieldChange('coAppYearsInEmployment', e.target.value)}
+                    placeholder="e.g. 8 Years / 12 Years"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION E: STUDENT REFERENCE */}
+          <div className="bg-white rounded-2xl p-6 border border-cg-border shadow-card space-y-4">
+            <div className="flex items-center justify-between border-b border-cg-border pb-3">
+              <div className="flex items-center gap-3">
+                <span className="w-7 h-7 rounded-full bg-cg-navy text-white text-xs font-bold flex items-center justify-center">
+                  E
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-cg-navy uppercase tracking-wide">
+                    STUDENT REFERENCE
+                  </h3>
+                  <p className="text-xs text-cg-muted">
+                    (Note: Reference should be known to the Student)
+                  </p>
+                </div>
+              </div>
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-cg-orange">
+                Form 2 · Section E
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-cg-navy mb-1.5">1. Name: *</label>
+                <input
+                  type="text"
+                  value={formData.refName}
+                  onChange={(e) => handleFieldChange('refName', e.target.value)}
+                  placeholder="Full name of reference"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-cg-navy mb-1.5">3. Mobile No.: *</label>
+                <input
+                  type="tel"
+                  maxLength={10}
+                  value={formData.refMobile}
+                  onChange={(e) => handleFieldChange('refMobile', e.target.value)}
+                  placeholder="10-digit mobile number"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-cg-navy mb-1.5">4. Personal E-mail ID:</label>
+                <input
+                  type="email"
+                  value={formData.refEmail}
+                  onChange={(e) => handleFieldChange('refEmail', e.target.value)}
+                  placeholder="reference@example.com"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-cg-navy mb-1.5">Date: *</label>
+                <input
+                  type="date"
+                  value={formData.refDate || todayStr}
+                  onChange={(e) => handleFieldChange('refDate', e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue bg-white"
+                />
+              </div>
+
+              <div className="sm:col-span-2 lg:col-span-4">
+                <label className="block text-xs font-bold text-cg-navy mb-1.5">2. Address: *</label>
+                <textarea
+                  rows={2}
+                  value={formData.refAddress}
+                  onChange={(e) => handleFieldChange('refAddress', e.target.value)}
+                  placeholder="Reference person's residential or official address"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-sm focus:outline-none focus:border-cg-blue"
+                />
+              </div>
+            </div>
+
+            {/* Signature of Student */}
+            <div className="pt-4 border-t border-gray-100">
+              <div className="bg-gray-50/70 rounded-xl p-4 border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex-1 max-w-md">
+                  <label className="block text-xs font-bold text-cg-navy mb-1">
+                    Signature of Student (Type full name to sign): *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.studentSignature || formData.studentName}
+                    onChange={(e) => handleFieldChange('studentSignature', e.target.value)}
+                    placeholder="Enter student name as signature"
+                    className="w-full px-3.5 py-2 rounded-xl border border-cg-border text-xs focus:outline-none focus:border-cg-blue font-medium bg-white"
+                  />
+                  <p className="text-[11px] text-cg-muted mt-1">
+                    The student hereby confirms that all academic and co-applicant details provided are genuine.
+                  </p>
+                </div>
+
+                {/* Digital Signature Seal */}
+                <div className="p-3 bg-white rounded-xl border border-dashed border-cg-blue text-center min-w-[220px]">
+                  <span className="text-[10px] text-cg-muted uppercase font-bold block mb-0.5">Signature of Student</span>
+                  <div className="font-serif italic text-lg text-cg-navy font-bold py-1">
+                    {formData.studentSignature || formData.studentName || 'Student Signature'}
+                  </div>
+                  <span className="text-[10px] text-cg-blue font-mono block">
+                    Signed Date: {formData.refDate || todayStr}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sticky Submit Bar */}
+      <div className="sticky bottom-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/95 backdrop-blur-md border border-cg-border rounded-2xl shadow-dropdown">
+        <div className="flex items-center gap-2 text-xs text-cg-muted">
+          <Shield className="w-4 h-4 text-cg-orange" />
+          <span>
+            {formStep === 1
+              ? 'Form 1 of 2: Student Details & Academics • Fill Form 1 then proceed to Form 2 to submit'
+              : 'Form 2 of 2: Co-Applicant, Employment & Reference • Review & submit loan application'}
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-2.5">
+          {formStep === 2 && (
+            <button
+              type="button"
+              onClick={() => {
+                setFormStep(1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="px-4 py-2.5 rounded-xl text-xs font-bold text-cg-navy bg-white hover:bg-gray-50 border border-cg-border shadow-sm transition-all flex items-center gap-1.5"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>← Back to Form 1</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={handleReset}
+            className="px-4 py-2.5 rounded-xl text-xs font-bold text-cg-text bg-white hover:bg-gray-50 border border-cg-border shadow-sm transition-all"
+          >
+            Reset Form
+          </button>
+
+          {/* Form 1: Proceed to Form 2 button (No submit button here) */}
+          {formStep === 1 && (
+            <button
+              type="button"
+              onClick={handleProceedToForm2}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cg-blue to-indigo-600 hover:brightness-105 shadow-sm transition-all"
+            >
+              <span>Proceed to Form 2 (Co-Applicant &amp; Reference)</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Form 2: ONLY show Submit Application button here after Form 1 then Form 2 */}
+          {formStep === 2 && (
+            <button
+              type="submit"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cg-orange to-cg-orange-hover hover:brightness-95 shadow-orange transition-all"
+            >
+              <Check className="w-4 h-4" />
+              <span>Submit Complete Application</span>
+            </button>
+          )}
+        </div>
+      </div>
         </form>
       ) : (
         /* ============================================================== */
@@ -1000,7 +1551,17 @@ export const EducationLoanPage = () => {
                         <td className="py-3 px-3 text-cg-muted">{item.date}</td>
                         <td className="py-3 px-3">
                           <span className="font-bold text-cg-navy block">{item.studentName}</span>
-                          <span className="text-[11px] text-cg-muted">{item.consultancyName || 'Direct'}</span>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[11px] text-cg-muted">{item.consultancyName || 'Direct'}</span>
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              Form 1 &amp; 2 ✓
+                            </span>
+                          </div>
+                          {Boolean(item.coAppName) && (
+                            <span className="text-[10px] text-cg-muted block mt-0.5 truncate max-w-[200px]">
+                              Co-App: <span className="font-medium text-cg-navy">{item.coAppName}</span> ({item.coAppRelationship || 'Relative'})
+                            </span>
+                          )}
                         </td>
                         <td className="py-3 px-3 text-cg-text">{item.mobile}</td>
                         <td className="py-3 px-3">
@@ -1211,9 +1772,12 @@ export const EducationLoanPage = () => {
 };
 
 // ----------------------------------------------------
-// Subcomponent: Printable Enquiry Slip
+// Subcomponent: Printable Enquiry Slip (Form 1 & Form 2)
 // ----------------------------------------------------
 const EnquirySlipView = ({ item, onBack }) => {
+  const { navigate } = useApp();
+  const [slipTab, setSlipTab] = useState('both'); // 'both' | 'form1' | 'form2'
+
   if (!item) {
     return (
       <div className="bg-white rounded-2xl p-12 text-center border border-cg-border">
@@ -1229,18 +1793,60 @@ const EnquirySlipView = ({ item, onBack }) => {
     );
   }
 
+  const relationshipDisplay =
+    item.coAppRelationship === 'Relative (Specify)'
+      ? item.coAppRelationshipOther || 'Relative'
+      : item.coAppRelationship || 'Father';
+
+  const occupationDisplay =
+    item.coAppOccupation === 'Others (Specify)'
+      ? item.coAppOccupationOther || 'Others'
+      : item.coAppOccupation || 'Employed';
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Top action bar (hidden on print) */}
-      <div className="no-print flex items-center justify-between">
+      <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <button
           type="button"
           onClick={onBack}
           className="flex items-center gap-1.5 text-xs font-bold text-cg-blue hover:underline"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Back to Education Loans
+          <span>Back to Education Loans</span>
         </button>
+
+        {/* Slip Mode Selector (Form 1, Form 2, or Both) */}
+        <div className="inline-flex bg-gray-200/60 p-1.5 rounded-xl gap-1 shrink-0 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setSlipTab('both')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              slipTab === 'both' ? 'bg-white text-cg-navy shadow-sm' : 'text-cg-muted hover:text-cg-text'
+            }`}
+          >
+            Complete File (Both Forms)
+          </button>
+          <button
+            type="button"
+            onClick={() => setSlipTab('form1')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              slipTab === 'form1' ? 'bg-white text-cg-navy shadow-sm' : 'text-cg-muted hover:text-cg-text'
+            }`}
+          >
+            Form 1: Student &amp; Academics
+          </button>
+          <button
+            type="button"
+            onClick={() => setSlipTab('form2')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              slipTab === 'form2' ? 'bg-white text-cg-navy shadow-sm' : 'text-cg-muted hover:text-cg-text'
+            }`}
+          >
+            Form 2: Co-Applicant &amp; Reference
+          </button>
+        </div>
+
         <div className="flex items-center gap-2">
           {(!item.bankName || item.crmStatus === 'Lead' || item.status === 'Lead') && (
             <button
@@ -1257,7 +1863,7 @@ const EnquirySlipView = ({ item, onBack }) => {
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-cg-navy bg-white hover:bg-gray-50 border border-cg-border shadow-sm"
           >
             <Printer className="w-4 h-4" />
-            Print / Download Slip
+            <span>Print Slip</span>
           </button>
           <button
             type="button"
@@ -1287,7 +1893,7 @@ const EnquirySlipView = ({ item, onBack }) => {
                 ? 'Loan is Sanctioned and Disbursed! Ready for Bank, Customer, and Vendor payout settlement.'
                 : item.status === 'Login'
                 ? `Logged in with ${item.bankName || 'Bank'} (App #${item.appNo || '-'}). Ready for Sanction or Decline.`
-                : 'Enquiry has been registered as a Lead. You can now move this lead to Bank Login status.'}
+                : 'Enquiry has been registered as a Lead with both Form 1 & Form 2. You can now move this lead to Bank Login status.'}
             </p>
           </div>
         </div>
@@ -1310,183 +1916,395 @@ const EnquirySlipView = ({ item, onBack }) => {
         )}
       </div>
 
-      {/* Official Slip Printable Card */}
-      <div className="bg-white rounded-2xl p-8 border border-cg-border shadow-card space-y-6 text-xs text-cg-text print:border-none print:shadow-none print:p-0">
-        {/* Slip Header */}
-        <div className="flex items-center justify-between border-b-2 border-cg-navy pb-4">
-          <div>
-            <img src="/assets/logo.png" alt="Capital Grow" className="h-10 w-auto object-contain mb-2" />
-            <h2 className="text-lg font-extrabold text-cg-navy uppercase tracking-wide">
-              STUDENT DETAILS FOR EDUCATION LOAN
-            </h2>
-            <p className="text-[11px] text-cg-muted">Capital Grow Overseas Education Loan Advisory & Processing</p>
+      {/* ======================================================== */}
+      {/* FORM 1 CARD: STUDENT DETAILS & ACADEMIC ENQUIRY        */}
+      {/* ======================================================== */}
+      {(slipTab === 'both' || slipTab === 'form1') && (
+        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-cg-border shadow-card space-y-6 text-xs text-cg-text print:border-none print:shadow-none print:p-0">
+          {/* Slip Header Form 1 */}
+          <div className="flex items-center justify-between border-b-2 border-cg-navy pb-4">
+            <div>
+              <img src="/assets/logo.png" alt="Capital Grow" className="h-10 w-auto object-contain mb-2" />
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-cg-navy text-white text-[10px] font-bold">FORM 1 OF 2</span>
+                <h2 className="text-base sm:text-lg font-extrabold text-cg-navy uppercase tracking-wide">
+                  STUDENT DETAILS FOR EDUCATION LOAN
+                </h2>
+              </div>
+              <p className="text-[11px] text-cg-muted mt-0.5">Capital Grow Overseas Education Loan Advisory &amp; Processing</p>
+            </div>
+            <div className="text-right">
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-cg-blue border border-blue-200">
+                {item.id}
+              </span>
+              <span className="block text-cg-muted text-[11px] mt-1.5">
+                Date: <b className="text-cg-navy">{item.date}</b>
+              </span>
+            </div>
           </div>
-          <div className="text-right">
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-cg-blue border border-blue-200">
-              {item.id}
-            </span>
-            <span className="block text-cg-muted text-[11px] mt-1.5">
-              Date: <b className="text-cg-navy">{item.date}</b>
-            </span>
-          </div>
-        </div>
 
-        {/* Consultancy & Loan overview */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-3 bg-gray-50 rounded-xl border border-cg-border">
-            <span className="text-[10px] text-cg-muted font-bold uppercase block">Consultancy Name</span>
-            <b className="text-sm font-bold text-cg-navy">{item.consultancyName || 'Direct Walk-in'}</b>
-          </div>
-          <div className="p-3 bg-orange-50/50 rounded-xl border border-orange-200">
-            <span className="text-[10px] text-cg-muted font-bold uppercase block">Loan Amount Requested</span>
-            <b className="text-base font-extrabold text-cg-orange">{item.loanAmount}</b>
-          </div>
-        </div>
-
-        {/* Section 1: Student Details */}
-        <div className="space-y-3">
-          <h3 className="text-xs font-bold text-cg-navy uppercase tracking-wider border-b border-cg-border pb-1">
-            STUDENT DETAILS
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">Name</span>
-              <b className="text-cg-navy">{item.studentName}</b>
+          {/* Consultancy & Loan overview */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-3 bg-gray-50 rounded-xl border border-cg-border">
+              <span className="text-[10px] text-cg-muted font-bold uppercase block">Consultancy Name</span>
+              <b className="text-sm font-bold text-cg-navy">{item.consultancyName || 'Direct Walk-in'}</b>
             </div>
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">Father's Name</span>
-              <b className="text-cg-navy">{item.fatherName}</b>
-            </div>
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">Mother's Name</span>
-              <b className="text-cg-navy">{item.motherName || '-'}</b>
-            </div>
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">Date of Birth</span>
-              <b className="text-cg-navy">{item.dob || '-'}</b>
-            </div>
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">Gender</span>
-              <b className="text-cg-navy">{item.gender}</b>
-            </div>
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">Marital Status</span>
-              <b className="text-cg-navy">{item.maritalStatus}</b>
-            </div>
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">10 Mobile No</span>
-              <b className="text-cg-navy">+91 {item.mobile}</b>
-            </div>
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">E-mail ID</span>
-              <b className="text-cg-navy">{item.email}</b>
-            </div>
-            <div className="col-span-2 p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">Current Residence</span>
-              <b className="text-cg-navy">
-                {item.residenceType} {item.monthlyRent ? `(Rent: ₹${item.monthlyRent})` : ''}
-              </b>
-            </div>
-            <div className="col-span-2 p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">Current Residential Address & Pincode</span>
-              <b className="text-cg-navy">{item.currentAddress} - {item.currentPincode}</b>
-            </div>
-            <div className="col-span-4 p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">7. Permanent Residential Address & Pincode</span>
-              <b className="text-cg-navy">{item.permAddress} - {item.permPincode}</b>
+            <div className="p-3 bg-orange-50/50 rounded-xl border border-orange-200">
+              <span className="text-[10px] text-cg-muted font-bold uppercase block">Loan Amount Requested</span>
+              <b className="text-base font-extrabold text-cg-orange">{item.loanAmount}</b>
             </div>
           </div>
-        </div>
 
-        {/* Section 2: Educational Details */}
-        <div className="space-y-3">
-          <h3 className="text-xs font-bold text-cg-navy uppercase tracking-wider border-b border-cg-border pb-1">
-            12 EDUCATIONAL DETAILS
-          </h3>
-          <table className="w-full text-left border border-cg-border">
-            <thead>
-              <tr className="bg-cg-navy text-white text-[11px]">
-                <th className="py-2 px-3">EXAM / COURSE</th>
-                <th className="py-2 px-3">YEAR COMPLETED</th>
-                <th className="py-2 px-3">MARKS (%)</th>
-                <th className="py-2 px-3">SCHOOL / COLLEGE / UNIVERSITY</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-cg-border">
-              {item.education && item.education.length > 0 ? (
-                item.education.map((e, idx) => (
-                  <tr key={idx}>
-                    <td className="py-2 px-3 font-bold">{e.exam}</td>
-                    <td className="py-2 px-3">{e.year || '-'}</td>
-                    <td className="py-2 px-3">{e.marks || '-'}</td>
-                    <td className="py-2 px-3">{e.school || '-'}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="py-2 px-3 text-center text-cg-muted">
-                    No academic records listed
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          <div className="grid grid-cols-2 gap-3 pt-1">
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">NAME OF ENTRANCE TEST</span>
-              <b className="text-cg-navy">{item.entranceTest || 'None'}</b>
-            </div>
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">SCORE</span>
-              <b className="text-cg-navy">{item.entranceScore || 'Awaited / N/A'}</b>
-            </div>
-            <div className="col-span-2 p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">NAME OF DEGREE</span>
-              <div className="space-y-0.5 mt-0.5">
-                <span className="block">a) <b>{item.degreeA || '-'}</b></span>
-                {item.degreeB && <span className="block">b) <b>{item.degreeB}</b></span>}
-                {item.degreeC && <span className="block">c) <b>{item.degreeC}</b></span>}
+          {/* Section 1: Student Details */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-cg-navy uppercase tracking-wider border-b border-cg-border pb-1">
+              STUDENT DETAILS
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">Name</span>
+                <b className="text-cg-navy">{item.studentName}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">Father's Name</span>
+                <b className="text-cg-navy">{item.fatherName}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">Mother's Name</span>
+                <b className="text-cg-navy">{item.motherName || '-'}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">Date of Birth</span>
+                <b className="text-cg-navy">{item.dob || '-'}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">Gender</span>
+                <b className="text-cg-navy">{item.gender}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">Marital Status</span>
+                <b className="text-cg-navy">{item.maritalStatus}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">10 Mobile No</span>
+                <b className="text-cg-navy">+91 {item.mobile}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">E-mail ID</span>
+                <b className="text-cg-navy">{item.email}</b>
+              </div>
+              <div className="col-span-2 p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">Current Residence</span>
+                <b className="text-cg-navy">
+                  {item.residenceType} {item.monthlyRent ? `(Rent: ₹${item.monthlyRent})` : ''}
+                </b>
+              </div>
+              <div className="col-span-2 p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">Current Residential Address &amp; Pincode</span>
+                <b className="text-cg-navy">{item.currentAddress} - {item.currentPincode}</b>
+              </div>
+              <div className="col-span-2 sm:col-span-4 p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">7. Permanent Residential Address &amp; Pincode</span>
+                <b className="text-cg-navy">{item.permAddress} - {item.permPincode}</b>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Section 3: B Course Details */}
-        <div className="space-y-3">
-          <h3 className="text-xs font-bold text-cg-navy uppercase tracking-wider border-b border-cg-border pb-1">
-            B COURSE DETAILS
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">Country</span>
-              <b className="text-cg-navy">{item.country === 'Others' ? item.otherCountry : item.country}</b>
+          {/* Section 2: Educational Details */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-cg-navy uppercase tracking-wider border-b border-cg-border pb-1">
+              12 EDUCATIONAL DETAILS
+            </h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border border-cg-border">
+                <thead>
+                  <tr className="bg-cg-navy text-white text-[11px]">
+                    <th className="py-2 px-3">EXAM / COURSE</th>
+                    <th className="py-2 px-3">YEAR COMPLETED</th>
+                    <th className="py-2 px-3">MARKS (%)</th>
+                    <th className="py-2 px-3">SCHOOL / COLLEGE / UNIVERSITY</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-cg-border">
+                  {item.education && item.education.length > 0 ? (
+                    item.education.map((e, idx) => (
+                      <tr key={idx}>
+                        <td className="py-2 px-3 font-bold">{e.exam}</td>
+                        <td className="py-2 px-3">{e.year || '-'}</td>
+                        <td className="py-2 px-3">{e.marks || '-'}</td>
+                        <td className="py-2 px-3">{e.school || '-'}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="py-2 px-3 text-center text-cg-muted">
+                        No academic records listed
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">1. Admission Status</span>
-              <b className="text-cg-navy">{item.admissionStatus === 'Confirmed' ? '☑ Confirmed' : '☐ Awaited'}</b>
-            </div>
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">2. Course Duration</span>
-              <b className="text-cg-navy">{item.courseDuration || '-'}</b>
-            </div>
-            <div className="p-2.5 bg-gray-50/70 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">3. University/College</span>
-              <b className="text-cg-navy">{item.university}</b>
-            </div>
-            <div className="col-span-4 p-2.5 bg-blue-50/50 border border-blue-100 rounded-lg">
-              <span className="text-[10px] text-cg-muted block font-semibold">Name of the Course</span>
-              <b className="text-sm font-bold text-cg-blue">{item.courseName}</b>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">NAME OF ENTRANCE TEST</span>
+                <b className="text-cg-navy">{item.entranceTest || 'None'}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">SCORE</span>
+                <b className="text-cg-navy">{item.entranceScore || 'Awaited / N/A'}</b>
+              </div>
+              <div className="sm:col-span-2 p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">NAME OF DEGREE</span>
+                <div className="space-y-0.5 mt-0.5">
+                  <span className="block">a) <b>{item.degreeA || '-'}</b></span>
+                  {item.degreeB && <span className="block">b) <b>{item.degreeB}</b></span>}
+                  {item.degreeC && <span className="block">c) <b>{item.degreeC}</b></span>}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Footer Signature Block */}
-        <div className="pt-6 border-t border-dashed border-cg-border flex items-center justify-between text-cg-muted text-[11px]">
-          <span>Generated digitally via Capital Grow CRM</span>
-          <span>Student / Counselor Signature: _______________________</span>
+          {/* Section 3: B Course Details */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-cg-navy uppercase tracking-wider border-b border-cg-border pb-1">
+              B COURSE DETAILS
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">Country</span>
+                <b className="text-cg-navy">{item.country === 'Others' ? item.otherCountry : item.country}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">1. Admission Status</span>
+                <b className="text-cg-navy">{item.admissionStatus === 'Confirmed' ? '☑ Confirmed' : '☐ Awaited'}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">2. Course Duration</span>
+                <b className="text-cg-navy">{item.courseDuration || '-'}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">3. University/College</span>
+                <b className="text-cg-navy">{item.university}</b>
+              </div>
+              <div className="col-span-2 sm:col-span-4 p-2.5 bg-blue-50/50 border border-blue-100 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">Name of the Course</span>
+                <b className="text-sm font-bold text-cg-blue">{item.courseName}</b>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Signature Block */}
+          <div className="pt-6 border-t border-dashed border-cg-border flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-cg-muted text-[11px]">
+            <span>Form 1 of 2 • Generated digitally via Capital Grow CRM</span>
+            <span>Student / Counselor Signature: _______________________</span>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Divider between Form 1 & Form 2 if both showing */}
+      {slipTab === 'both' && (
+        <div className="no-print flex items-center justify-center gap-3 my-4">
+          <div className="h-px bg-cg-border flex-1" />
+          <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-orange-100 text-cg-orange border border-orange-200">
+            Form 2 · Co-Applicant Details &amp; Student Reference
+          </span>
+          <div className="h-px bg-cg-border flex-1" />
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* FORM 2 CARD: CO-APPLICANT & STUDENT REFERENCE           */}
+      {/* ======================================================== */}
+      {(slipTab === 'both' || slipTab === 'form2') && (
+        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-cg-border shadow-card space-y-6 text-xs text-cg-text print:border-none print:shadow-none print:p-0 print:break-before-page">
+          {/* Slip Header Form 2 */}
+          <div className="flex items-center justify-between border-b-2 border-cg-orange pb-4">
+            <div>
+              <img src="/assets/logo.png" alt="Capital Grow" className="h-10 w-auto object-contain mb-2" />
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-cg-orange text-white text-[10px] font-bold">FORM 2 OF 2</span>
+                <h2 className="text-base sm:text-lg font-extrabold text-cg-navy uppercase tracking-wide">
+                  CO-APPLICANT DETAILS &amp; STUDENT REFERENCE
+                </h2>
+              </div>
+              <p className="text-[11px] text-cg-muted mt-0.5">Capital Grow Co-Borrower Assessment &amp; Reference Verification Slip</p>
+            </div>
+            <div className="text-right">
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-orange-50 text-cg-orange border border-orange-200">
+                {item.id} - FORM 2
+              </span>
+              <span className="block text-cg-muted text-[11px] mt-1.5">
+                Date: <b className="text-cg-navy">{item.refDate || item.date}</b>
+              </span>
+            </div>
+          </div>
+
+          {/* Student Linkage Banner */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-orange-50/40 rounded-xl border border-orange-200">
+            <div>
+              <span className="text-[10px] text-cg-muted font-bold uppercase block">Student Full Name</span>
+              <b className="text-xs font-bold text-cg-navy">{item.studentName}</b>
+            </div>
+            <div>
+              <span className="text-[10px] text-cg-muted font-bold uppercase block">Student Mobile</span>
+              <b className="text-xs font-bold text-cg-navy">+91 {item.mobile}</b>
+            </div>
+            <div>
+              <span className="text-[10px] text-cg-muted font-bold uppercase block">Target Institution</span>
+              <b className="text-xs font-bold text-cg-navy truncate block">{item.university}</b>
+            </div>
+            <div>
+              <span className="text-[10px] text-cg-muted font-bold uppercase block">Loan Amount</span>
+              <b className="text-sm font-extrabold text-cg-orange">{item.loanAmount}</b>
+            </div>
+          </div>
+
+          {/* SECTION C: CO-APPLICANT DETAILS */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-cg-navy uppercase tracking-wider border-b border-cg-border pb-1 flex items-center gap-2">
+              <Users className="w-4 h-4 text-cg-orange" />
+              <span>C. CO-APPLICANT DETAILS</span>
+            </h3>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="col-span-2 p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">1. Relationship With Student:</span>
+                <b className="text-sm text-cg-navy font-bold flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full bg-cg-orange" />
+                  <span>{relationshipDisplay}</span>
+                </b>
+              </div>
+              <div className="col-span-2 p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">2. Name:</span>
+                <b className="text-sm text-cg-navy font-bold block mt-0.5">{item.coAppName || item.fatherName || '-'}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">3. Mobile No.:</span>
+                <b className="text-cg-navy font-bold block mt-0.5">
+                  {item.coAppMobile ? `+91 ${item.coAppMobile}` : '-'}
+                </b>
+              </div>
+              <div className="col-span-3 p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">4. E-mail ID:</span>
+                <b className="text-cg-navy font-bold block mt-0.5">{item.coAppEmail || '-'}</b>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION D: EMPLOYMENT/BUSINESS DETAILS OF CO-APPLICANT */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-cg-navy uppercase tracking-wider border-b border-cg-border pb-1 flex items-center gap-2">
+              <Briefcase className="w-4 h-4 text-cg-blue" />
+              <span>D. EMPLOYMENT / BUSINESS DETAILS OF CO-APPLICANT</span>
+            </h3>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">1. Occupation:</span>
+                <b className="text-cg-navy font-bold block mt-0.5">{occupationDisplay}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">2. Name of Employer / Business:</span>
+                <b className="text-cg-navy font-bold block mt-0.5">{item.coAppEmployerName || '-'}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">3. Designation / Profession:</span>
+                <b className="text-cg-navy font-bold block mt-0.5">{item.coAppDesignation || '-'}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">4. Official E-mail:</span>
+                <b className="text-cg-navy font-bold block mt-0.5">{item.coAppOfficialEmail || '-'}</b>
+              </div>
+              <div className="p-2.5 bg-emerald-50/60 border border-emerald-100 rounded-lg">
+                <span className="text-[10px] text-emerald-800 block font-semibold">5. Gross Monthly Salary / Income:</span>
+                <b className="text-sm text-emerald-900 font-extrabold block mt-0.5">
+                  {item.coAppGrossIncome ? (String(item.coAppGrossIncome).startsWith('₹') ? item.coAppGrossIncome : `₹ ${item.coAppGrossIncome}`) : '-'}
+                </b>
+              </div>
+              <div className="p-2.5 bg-emerald-50/60 border border-emerald-100 rounded-lg">
+                <span className="text-[10px] text-emerald-800 block font-semibold">6. Net Monthly Salary / Income:</span>
+                <b className="text-sm text-emerald-900 font-extrabold block mt-0.5">
+                  {item.coAppNetIncome ? (String(item.coAppNetIncome).startsWith('₹') ? item.coAppNetIncome : `₹ ${item.coAppNetIncome}`) : '-'}
+                </b>
+              </div>
+              <div className="col-span-2 sm:col-span-3 p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">7. No. of Years in Current Employment / Business:</span>
+                <b className="text-cg-navy font-bold block mt-0.5">{item.coAppYearsInEmployment || '-'}</b>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION E: STUDENT REFERENCE */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-cg-navy uppercase tracking-wider border-b border-cg-border pb-1 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <UserCheck className="w-4 h-4 text-purple-600" />
+                <span>E. STUDENT REFERENCE</span>
+              </span>
+              <span className="text-[10px] text-cg-muted font-normal lowercase tracking-normal italic">
+                (Note: Reference should be known to the Student)
+              </span>
+            </h3>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">1. Name:</span>
+                <b className="text-cg-navy font-bold block mt-0.5">{item.refName || '-'}</b>
+              </div>
+              <div className="p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">3. Mobile No.:</span>
+                <b className="text-cg-navy font-bold block mt-0.5">
+                  {item.refMobile ? `+91 ${item.refMobile}` : '-'}
+                </b>
+              </div>
+              <div className="col-span-2 p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">4. Personal E-mail ID:</span>
+                <b className="text-cg-navy font-bold block mt-0.5">{item.refEmail || '-'}</b>
+              </div>
+              <div className="col-span-2 sm:col-span-4 p-2.5 bg-gray-50/70 rounded-lg">
+                <span className="text-[10px] text-cg-muted block font-semibold">2. Address:</span>
+                <b className="text-cg-navy font-medium block mt-0.5">{item.refAddress || '-'}</b>
+              </div>
+            </div>
+          </div>
+
+          {/* Date & Signature of Student */}
+          <div className="pt-4 border-t border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+              <div>
+                <span className="text-[10px] text-cg-muted block font-semibold">Date of Submission:</span>
+                <b className="text-sm text-cg-navy font-bold block mt-0.5">{item.refDate || item.date}</b>
+                <p className="text-[10px] text-cg-muted mt-2">
+                  "I hereby confirm that all information provided in Form 1 &amp; Form 2 regarding my co-applicant and reference is accurate to the best of my knowledge."
+                </p>
+              </div>
+
+              {/* Digital Signature Seal */}
+              <div className="p-3 bg-gray-50 rounded-xl border border-dashed border-cg-blue text-center">
+                <span className="text-[10px] text-cg-muted uppercase font-bold block mb-1">
+                  Signature of Student
+                </span>
+                <div className="font-serif italic text-lg text-cg-navy font-extrabold py-1">
+                  {item.studentSignature || item.studentName}
+                </div>
+                <div className="flex items-center justify-center gap-1.5 text-[10px] text-emerald-700 font-mono font-semibold">
+                  <span>✓ Verified Digital Submission</span>
+                  <span>•</span>
+                  <span>{item.refDate || item.date}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Signature Block */}
+          <div className="pt-6 border-t border-dashed border-cg-border flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-cg-muted text-[11px]">
+            <span>Form 2 of 2 • Generated digitally via Capital Grow CRM</span>
+            <span>Counselor Verification: _______________________</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

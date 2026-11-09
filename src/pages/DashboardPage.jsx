@@ -13,7 +13,8 @@ import {
   Calendar,
   ArrowUpRight,
   Building2,
-  CreditCard
+  CreditCard,
+  ArrowRight
 } from 'lucide-react';
 
 export const DashboardPage = () => {

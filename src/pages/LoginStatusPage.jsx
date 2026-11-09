@@ -35,7 +35,9 @@ import {
   Shield,
   ExternalLink,
   Award,
-  Home
+  Home,
+  Briefcase,
+  Check
 } from 'lucide-react';
 
 const COMMON_BANKS = [
@@ -126,7 +128,27 @@ export const LoginStatusPage = () => {
         education: edu?.education || c.education || [],
         university: c.univ || edu?.university || 'University',
         courseName: c.course || edu?.courseName || 'Course',
-        loanAmount: c.loanAmount || edu?.loanAmount || '₹ 40,00,000'
+        loanAmount: c.loanAmount || edu?.loanAmount || '₹ 40,00,000',
+        // FORM 2: Co-Applicant, Employment & Reference details
+        coAppRelationship: c.coAppRelationship || edu?.coAppRelationship || 'Father',
+        coAppRelationshipOther: c.coAppRelationshipOther || edu?.coAppRelationshipOther || '',
+        coAppName: c.coAppName || edu?.coAppName || c.fatherName || edu?.fatherName || '',
+        coAppMobile: c.coAppMobile || edu?.coAppMobile || '',
+        coAppEmail: c.coAppEmail || edu?.coAppEmail || '',
+        coAppOccupation: c.coAppOccupation || edu?.coAppOccupation || 'Employed',
+        coAppOccupationOther: c.coAppOccupationOther || edu?.coAppOccupationOther || '',
+        coAppEmployerName: c.coAppEmployerName || edu?.coAppEmployerName || '',
+        coAppDesignation: c.coAppDesignation || edu?.coAppDesignation || '',
+        coAppOfficialEmail: c.coAppOfficialEmail || edu?.coAppOfficialEmail || '',
+        coAppGrossIncome: c.coAppGrossIncome || edu?.coAppGrossIncome || '',
+        coAppNetIncome: c.coAppNetIncome || edu?.coAppNetIncome || '',
+        coAppYearsInEmployment: c.coAppYearsInEmployment || edu?.coAppYearsInEmployment || '',
+        refName: c.refName || edu?.refName || '',
+        refAddress: c.refAddress || edu?.refAddress || '',
+        refMobile: c.refMobile || edu?.refMobile || '',
+        refEmail: c.refEmail || edu?.refEmail || '',
+        refDate: c.refDate || edu?.refDate || c.loginDate || c.created || '',
+        studentSignature: c.studentSignature || edu?.studentSignature || c.name || edu?.studentName || ''
       };
     });
 
@@ -798,6 +820,19 @@ export const LoginStatusPage = () => {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
+                  onClick={() => {
+                    const targetSlipId = detailModal.record.eduLoanId || detailModal.record.id;
+                    setDetailModal({ isOpen: false, record: null });
+                    navigate('education-loan', 'view', targetSlipId);
+                  }}
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cg-orange hover:bg-cg-orange-hover text-white text-xs font-bold transition-all shadow-sm"
+                  title="Open Printable Enquiry Slip for Form 1 & Form 2"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Enquiry Slip (Form 1 &amp; 2)</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => window.print()}
                   className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1.5 transition-colors border border-white/20"
                 >
@@ -1066,7 +1101,7 @@ export const LoginStatusPage = () => {
               <div className="bg-white rounded-2xl p-4 border border-cg-border space-y-3 shadow-card">
                 <span className="text-xs font-bold text-cg-navy uppercase tracking-wider flex items-center gap-2 border-b border-cg-border pb-2">
                   <Award className="w-4 h-4 text-purple-600" />
-                  4. Academic Qualification History &amp; Test Scores
+                  4. Academic Qualification History &amp; Test Scores (Form 1)
                 </span>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pb-2">
@@ -1115,7 +1150,189 @@ export const LoginStatusPage = () => {
                 )}
               </div>
 
-              {/* SECTION 5: Counselor & Remarks */}
+              {/* ======================================================== */}
+              {/* SECTION 5: FORM 2 · C. CO-APPLICANT DETAILS              */}
+              {/* ======================================================== */}
+              <div className="bg-white rounded-2xl p-4 border border-cg-border space-y-3 shadow-card">
+                <div className="flex items-center justify-between border-b border-cg-border pb-2">
+                  <span className="text-xs font-bold text-cg-navy uppercase tracking-wider flex items-center gap-2">
+                    <Users className="w-4 h-4 text-cg-orange" />
+                    5. Co-Applicant Details (Form 2 · Section C)
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-cg-orange border border-orange-200">
+                    Form 2 Linked
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div className="p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">1. Relationship With Student</span>
+                    <b className="text-xs text-cg-navy font-bold block mt-0.5">
+                      {detailModal.record.coAppRelationship === 'Relative (Specify)'
+                        ? detailModal.record.coAppRelationshipOther || 'Relative'
+                        : detailModal.record.coAppRelationship || 'Father'}
+                    </b>
+                  </div>
+                  <div className="p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">2. Name</span>
+                    <b className="text-xs text-cg-navy font-bold block mt-0.5">
+                      {detailModal.record.coAppName || detailModal.record.fatherName || '-'}
+                    </b>
+                  </div>
+                  <div className="p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">3. Mobile No.</span>
+                    <b className="text-xs text-cg-navy font-bold flex items-center gap-1.5 mt-0.5">
+                      <span>{detailModal.record.coAppMobile ? `+91 ${detailModal.record.coAppMobile}` : '-'}</span>
+                      {detailModal.record.coAppMobile && (
+                        <button
+                          type="button"
+                          onClick={() => simulateCall(detailModal.record.coAppName || 'Co-Applicant')}
+                          className="p-1 rounded bg-blue-50 text-cg-blue hover:bg-blue-100"
+                          title="Call Co-Applicant"
+                        >
+                          <Phone className="w-3 h-3" />
+                        </button>
+                      )}
+                    </b>
+                  </div>
+                  <div className="p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">4. E-mail ID</span>
+                    <b className="text-xs text-cg-navy font-bold block mt-0.5 truncate">
+                      {detailModal.record.coAppEmail || '-'}
+                    </b>
+                  </div>
+                </div>
+              </div>
+
+              {/* ======================================================== */}
+              {/* SECTION 6: FORM 2 · D. EMPLOYMENT / BUSINESS DETAILS     */}
+              {/* ======================================================== */}
+              <div className="bg-white rounded-2xl p-4 border border-cg-border space-y-3 shadow-card">
+                <span className="text-xs font-bold text-cg-navy uppercase tracking-wider flex items-center gap-2 border-b border-cg-border pb-2">
+                  <Briefcase className="w-4 h-4 text-cg-blue" />
+                  6. Employment / Business Details of Co-Applicant (Form 2 · Section D)
+                </span>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <div className="p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">1. Occupation</span>
+                    <b className="text-xs text-cg-navy font-bold block mt-0.5">
+                      {detailModal.record.coAppOccupation === 'Others (Specify)'
+                        ? detailModal.record.coAppOccupationOther || 'Others'
+                        : detailModal.record.coAppOccupation || 'Employed'}
+                    </b>
+                  </div>
+                  <div className="p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">2. Name of Employer / Business</span>
+                    <b className="text-xs text-cg-navy font-bold block mt-0.5 truncate">
+                      {detailModal.record.coAppEmployerName || '-'}
+                    </b>
+                  </div>
+                  <div className="p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">3. Designation / Profession</span>
+                    <b className="text-xs text-cg-navy font-bold block mt-0.5 truncate">
+                      {detailModal.record.coAppDesignation || '-'}
+                    </b>
+                  </div>
+                  <div className="p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">4. Official E-mail</span>
+                    <b className="text-xs text-cg-navy font-bold block mt-0.5 truncate">
+                      {detailModal.record.coAppOfficialEmail || '-'}
+                    </b>
+                  </div>
+                  <div className="p-2.5 bg-emerald-50/70 border border-emerald-100 rounded-xl">
+                    <span className="text-[10px] text-emerald-800 font-bold uppercase block">5. Gross Monthly Salary/Income</span>
+                    <b className="text-xs text-emerald-900 font-extrabold block mt-0.5">
+                      {detailModal.record.coAppGrossIncome
+                        ? (String(detailModal.record.coAppGrossIncome).startsWith('₹')
+                            ? detailModal.record.coAppGrossIncome
+                            : `₹ ${detailModal.record.coAppGrossIncome}`)
+                        : '-'}
+                    </b>
+                  </div>
+                  <div className="p-2.5 bg-emerald-50/70 border border-emerald-100 rounded-xl">
+                    <span className="text-[10px] text-emerald-800 font-bold uppercase block">6. Net Monthly Salary/Income</span>
+                    <b className="text-xs text-emerald-900 font-extrabold block mt-0.5">
+                      {detailModal.record.coAppNetIncome
+                        ? (String(detailModal.record.coAppNetIncome).startsWith('₹')
+                            ? detailModal.record.coAppNetIncome
+                            : `₹ ${detailModal.record.coAppNetIncome}`)
+                        : '-'}
+                    </b>
+                  </div>
+                  <div className="col-span-2 p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">7. No. of Years in Current Employment/Business</span>
+                    <b className="text-xs text-cg-navy font-bold block mt-0.5">
+                      {detailModal.record.coAppYearsInEmployment || '-'}
+                    </b>
+                  </div>
+                </div>
+              </div>
+
+              {/* ======================================================== */}
+              {/* SECTION 7: FORM 2 · E. STUDENT REFERENCE & SIGNATURE      */}
+              {/* ======================================================== */}
+              <div className="bg-white rounded-2xl p-4 border border-cg-border space-y-3 shadow-card">
+                <span className="text-xs font-bold text-cg-navy uppercase tracking-wider flex items-center justify-between border-b border-cg-border pb-2">
+                  <span className="flex items-center gap-2">
+                    <UserCheck className="w-4 h-4 text-purple-600" />
+                    <span>7. Student Reference &amp; Signature (Form 2 · Section E)</span>
+                  </span>
+                  <span className="text-[10px] text-cg-muted font-normal lowercase tracking-normal italic">
+                    (Reference known to Student)
+                  </span>
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div className="p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">1. Reference Name</span>
+                    <b className="text-xs text-cg-navy font-bold block mt-0.5">{detailModal.record.refName || '-'}</b>
+                  </div>
+                  <div className="p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">3. Mobile No.</span>
+                    <b className="text-xs text-cg-navy font-bold flex items-center gap-1.5 mt-0.5">
+                      <span>{detailModal.record.refMobile ? `+91 ${detailModal.record.refMobile}` : '-'}</span>
+                      {detailModal.record.refMobile && (
+                        <button
+                          type="button"
+                          onClick={() => simulateCall(detailModal.record.refName || 'Student Reference')}
+                          className="p-1 rounded bg-blue-50 text-cg-blue hover:bg-blue-100"
+                          title="Call Reference"
+                        >
+                          <Phone className="w-3 h-3" />
+                        </button>
+                      )}
+                    </b>
+                  </div>
+                  <div className="col-span-2 p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">4. Personal E-mail ID</span>
+                    <b className="text-xs text-cg-navy font-bold block mt-0.5">{detailModal.record.refEmail || '-'}</b>
+                  </div>
+                  <div className="col-span-2 sm:col-span-4 p-2.5 bg-gray-50/70 rounded-xl">
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">2. Address</span>
+                    <p className="text-xs text-cg-navy mt-0.5">{detailModal.record.refAddress || '-'}</p>
+                  </div>
+                </div>
+
+                {/* Digital Signature & Submission Date Box */}
+                <div className="pt-2 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                  <div>
+                    <span className="text-[10px] text-cg-muted font-bold uppercase block">Submission / Reference Date</span>
+                    <b className="text-xs text-cg-navy font-bold block mt-0.5">
+                      {detailModal.record.refDate || detailModal.record.date || detailModal.record.loginDate || '-'}
+                    </b>
+                  </div>
+                  <div className="p-2.5 bg-gray-50/90 rounded-xl border border-dashed border-cg-blue text-center">
+                    <span className="text-[10px] text-cg-muted uppercase font-bold block">Signature of Student</span>
+                    <span className="font-serif italic text-base text-cg-navy font-bold block py-0.5">
+                      {detailModal.record.studentSignature || detailModal.record.name}
+                    </span>
+                    <span className="text-[10px] text-emerald-700 font-semibold block">✓ Form 2 Digitally Signed</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION 8: Counselor & Remarks */}
               <div className="bg-gray-50 rounded-2xl p-4 border border-cg-border grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 <div>
                   <span className="text-[10px] text-cg-muted font-bold uppercase block">Assigned Counselor</span>

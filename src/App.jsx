@@ -52,6 +52,8 @@ export const App = () => {
         return <CustomersPage />;
       case 'education-loan':
       case 'enquiries':
+      case 'Loans':
+      case 'loans':
         return <EducationLoanPage />;
       case 'login-status':
       case 'applications':
