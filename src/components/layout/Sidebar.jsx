@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   Home,
@@ -11,6 +11,10 @@ import {
   Settings,
   ChevronDown,
   Building2,
+  Shield,
+  Heart,
+  Activity,
+  Car,
   X
 } from 'lucide-react';
 
@@ -23,7 +27,16 @@ const NAV_ITEMS = [
     icon: FileText,
     subItems: [
       { id: 'education-loan', label: 'Education Loan' },
-      { id: 'insurance', label: 'Insurance' },
+      {
+        id: 'insurance',
+        label: 'Insurance Advisory',
+        icon: Shield,
+        children: [
+          { action: 'life', label: 'Life Insurance', icon: Heart },
+          { action: 'health', label: 'Health Insurance', icon: Activity },
+          { action: 'motor', label: 'Motor Insurance', icon: Car }
+        ]
+      },
       { id: 'Loans', label: 'Loans' }
     ]
   },
@@ -40,6 +53,7 @@ export const Sidebar = () => {
     navigate,
     customers,
     isSidebarCollapsed,
+    setIsSidebarCollapsed,
     isMobileNavOpen,
     setIsMobileNavOpen
   } = useApp();
@@ -65,9 +79,23 @@ export const Sidebar = () => {
       : null;
   });
 
+  const [openInsurance, setOpenInsurance] = useState(() => route.page === 'insurance');
+
+  useEffect(() => {
+    if (route.page === 'insurance' || route.page === 'insurance-advisory') {
+      setOpenSub('enquiries');
+      setOpenInsurance(true);
+    }
+  }, [route.page]);
+
   const handleNavClick = (item) => {
     if (item.subItems) {
-      setOpenSub(openSub === item.id ? null : item.id);
+      if (isSidebarCollapsed) {
+        setIsSidebarCollapsed(false);
+        setOpenSub(item.id);
+      } else {
+        setOpenSub(openSub === item.id ? null : item.id);
+      }
     } else {
       navigate(item.id);
       setIsMobileNavOpen(false);
@@ -76,7 +104,16 @@ export const Sidebar = () => {
 
   const isCurrentActive = (item) => {
     if (item.id === route.page) return true;
-    if (item.subItems && item.subItems.some((s) => s.id === route.page)) return true;
+    if (
+      item.subItems &&
+      item.subItems.some((s) => {
+        if (s.id === route.page) return true;
+        if (s.children && (route.page === 'insurance' || route.page === 'insurance-advisory')) return true;
+        return false;
+      })
+    ) {
+      return true;
+    }
     return false;
   };
 
@@ -161,8 +198,94 @@ export const Sidebar = () => {
 
                 {/* Submenu */}
                 {!isSidebarCollapsed && item.subItems && isSubOpen && (
-                  <div className="pl-9 pr-2 py-1 space-y-1">
+                  <div className="pl-6 pr-2 py-1 space-y-1">
                     {item.subItems.map((sub) => {
+                      // Nested expandable item: Insurance Advisory (Life, Health, Motor)
+                      if (sub.children) {
+                        const isInsuranceActive = route.page === 'insurance' || route.page === 'insurance-advisory';
+                        const isNestedOpen = openInsurance;
+
+                        return (
+                          <div key={sub.id} className="space-y-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenInsurance(!isNestedOpen);
+                                if (route.page !== 'insurance') {
+                                  navigate('insurance', route.action || 'life');
+                                }
+                              }}
+                              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 text-left
+                                ${isInsuranceActive
+                                  ? 'bg-white/20 text-white font-bold shadow-sm'
+                                  : 'text-blue-100 hover:text-white hover:bg-white/10'
+                                }
+                              `}
+                              title="Insurance Advisory (Life, Health, Motor)"
+                            >
+                              <div className="flex items-center gap-2 truncate">
+                                <Shield className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                                <span className="truncate">{sub.label}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/15 text-orange-200 font-bold uppercase tracking-wider">
+                                  3 Types
+                                </span>
+                                <ChevronDown
+                                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                                    isNestedOpen ? 'rotate-180' : ''
+                                  }`}
+                                />
+                              </div>
+                            </button>
+
+                            {/* Sub-options: Life, Health, Motor */}
+                            {isNestedOpen && (
+                              <div className="pl-3 pr-1 py-1 space-y-1 border-l-2 border-orange-400/40 ml-4">
+                                {sub.children.map((child) => {
+                                  const ChildIcon = child.icon;
+                                  const isChildActive =
+                                    route.page === 'insurance' &&
+                                    (route.action === child.action || (!route.action && child.action === 'life'));
+
+                                  return (
+                                    <button
+                                      key={child.action}
+                                      type="button"
+                                      onClick={() => {
+                                        navigate('insurance', child.action);
+                                        setIsMobileNavOpen(false);
+                                      }}
+                                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 text-left
+                                        ${isChildActive
+                                          ? 'bg-cg-orange text-white font-bold shadow-orange'
+                                          : 'text-blue-100 hover:text-white hover:bg-white/10'
+                                        }
+                                      `}
+                                    >
+                                      <div className="flex items-center gap-2 truncate">
+                                        <ChildIcon
+                                          className={`w-3.5 h-3.5 shrink-0 ${
+                                            isChildActive ? 'text-white' : 'text-orange-300'
+                                          }`}
+                                        />
+                                        <span className="truncate">{child.label}</span>
+                                      </div>
+                                      {isChildActive ? (
+                                        <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0 animate-pulse" />
+                                      ) : (
+                                        <span className="text-[10px] text-white/40">→</span>
+                                      )}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+
+                      // Normal sub-item (Education Loan, Loans)
                       const isSubActive = route.page === sub.id;
                       return (
                         <button
