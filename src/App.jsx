@@ -7,6 +7,7 @@ import { CustomersPage } from './pages/CustomersPage';
 import { EducationLoanPage } from './pages/EducationLoanPage';
 import { LoginStatusPage } from './pages/LoginStatusPage';
 import { PaymentsPage } from './pages/PaymentsPage';
+import { UserManagementPage } from './pages/UserManagementPage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
 export const App = () => {
@@ -57,6 +58,8 @@ export const App = () => {
         return <LoginStatusPage />;
       case 'payments':
         return <PaymentsPage />;
+      case 'users':
+        return <UserManagementPage />;
       default:
         return <PlaceholderPage pageId={route.page} />;
     }
