@@ -120,11 +120,11 @@ export const DashboardPage = () => {
           <h1 className="text-2xl sm:text-3xl font-bold text-cg-navy">Dashboard</h1>
           
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="px-3.5 py-2.5 bg-white border border-cg-border rounded-xl text-sm font-semibold text-cg-navy shadow-sm focus:outline-none focus:border-cg-blue"
+            className="px-3 py-2 sm:px-3.5 sm:py-2.5 bg-white border border-cg-border rounded-xl text-xs sm:text-sm font-semibold text-cg-navy shadow-sm focus:outline-none focus:border-cg-blue"
           >
             <option>Last 30 Days</option>
             <option>Last 7 Days</option>
@@ -133,7 +133,7 @@ export const DashboardPage = () => {
           <button
             type="button"
             onClick={() => navigate('education-loan')}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-cg-orange to-cg-orange-hover hover:brightness-95 shadow-orange transition-all"
+            className="flex items-center gap-1.5 sm:gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-cg-orange to-cg-orange-hover hover:brightness-95 shadow-orange transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Add New Enquiry</span>
@@ -142,7 +142,7 @@ export const DashboardPage = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (

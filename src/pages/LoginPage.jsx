@@ -145,7 +145,7 @@ export const LoginPage = () => {
 
             <div className="p-3.5 bg-cg-light-blue rounded-xl border border-blue-100 text-xs text-cg-blue space-y-2">
               <div className="font-bold text-center">Demo Quick Login Credentials:</div>
-              <div className="grid grid-cols-2 gap-2 text-[11px]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
                 <button
                   type="button"
                   onClick={() => {

@@ -239,7 +239,7 @@ export const CustomersPage = () => {
         {pageItems.length > 0 ? (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left text-xs min-w-[780px]">
                 <thead>
                   <tr className="bg-gray-50 border-b border-cg-border text-cg-muted font-bold uppercase tracking-wider">
                     <th className="py-3 px-3">Customer ID</th>

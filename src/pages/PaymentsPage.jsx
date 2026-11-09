@@ -186,11 +186,11 @@ export const PaymentsPage = () => {
       <div className="bg-white rounded-2xl p-5 border border-cg-border shadow-card space-y-4">
         {/* Sub-header & Filter Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="inline-flex bg-gray-100 p-1.5 rounded-xl gap-1">
+          <div className="inline-flex bg-gray-100 p-1.5 rounded-xl gap-1 overflow-x-auto max-w-full shrink-0">
             <button
               type="button"
               onClick={() => setPayoutFilter('all')}
-              className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
                 payoutFilter === 'all'
                   ? 'bg-white text-cg-navy shadow-sm'
                   : 'text-cg-muted hover:text-cg-text'
@@ -201,7 +201,7 @@ export const PaymentsPage = () => {
             <button
               type="button"
               onClick={() => setPayoutFilter('pending')}
-              className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
                 payoutFilter === 'pending'
                   ? 'bg-white text-cg-navy shadow-sm'
                   : 'text-cg-muted hover:text-cg-text'
@@ -212,7 +212,7 @@ export const PaymentsPage = () => {
             <button
               type="button"
               onClick={() => setPayoutFilter('saved')}
-              className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
                 payoutFilter === 'saved'
                   ? 'bg-white text-cg-navy shadow-sm'
                   : 'text-cg-muted hover:text-cg-text'
@@ -237,7 +237,7 @@ export const PaymentsPage = () => {
         {/* Records Table */}
         {filteredRecords.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs min-w-[760px]">
               <thead>
                 <tr className="bg-gray-50 border-b border-cg-border text-cg-muted font-bold uppercase tracking-wider">
                   <th className="py-3 px-3">Disbursed Customer</th>
@@ -397,8 +397,8 @@ export const PaymentsPage = () => {
       {/* MODAL: Enter 3 Payouts (Bank, Customer, Vendor)          */}
       {/* ======================================================== */}
       {payoutModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-cg-border space-y-5 animate-scale-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-5 sm:p-6 my-auto max-h-[92vh] overflow-y-auto shadow-2xl border border-cg-border space-y-4 animate-scale-up">
             <div className="flex items-center justify-between border-b border-cg-border pb-3">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-cg-orange" />
@@ -560,8 +560,8 @@ export const PaymentsPage = () => {
       {/* MODAL: Printable Payout Voucher / Settlement Statement   */}
       {/* ======================================================== */}
       {voucherModal.isOpen && voucherModal.record && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-cg-border space-y-5 animate-scale-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-5 sm:p-6 my-auto max-h-[92vh] overflow-y-auto shadow-2xl border border-cg-border space-y-4 animate-scale-up">
             <div className="flex items-center justify-between border-b border-cg-border pb-3 no-print">
               <div className="flex items-center gap-2">
                 <Printer className="w-5 h-5 text-cg-blue" />

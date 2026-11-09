@@ -73,18 +73,18 @@ export const Topbar = () => {
 
         {/* Global Search */}
         <div ref={searchRef} className="relative flex-1">
-          <div className="flex items-center gap-3 px-4 h-11 bg-white border border-cg-border rounded-xl shadow-card focus-within:border-cg-blue focus-within:ring-2 focus-within:ring-cg-blue/20 transition-all">
+          <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 h-10 sm:h-11 bg-white border border-cg-border rounded-xl shadow-card focus-within:border-cg-blue focus-within:ring-2 focus-within:ring-cg-blue/20 transition-all">
             <Search className="w-4 h-4 text-cg-muted shrink-0" />
             <input
               type="text"
-              placeholder="Search by Customer ID, Name, Mobile, Email..."
+              placeholder="Search by ID, name, mobile..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setShowSearchResults(true);
               }}
               onFocus={() => setShowSearchResults(true)}
-              className="w-full bg-transparent border-0 outline-none text-sm text-cg-text placeholder:text-cg-muted"
+              className="w-full bg-transparent border-0 outline-none text-xs sm:text-sm text-cg-text placeholder:text-cg-muted"
             />
           </div>
 
@@ -139,7 +139,7 @@ export const Topbar = () => {
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-cg-border rounded-xl shadow-dropdown overflow-hidden z-50">
+            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] bg-white border border-cg-border rounded-xl shadow-dropdown overflow-hidden z-50">
               <div className="px-4 py-3 bg-gray-50 border-b border-cg-border font-bold text-sm text-cg-navy">
                 Scheduled Reminders & Follow-ups
               </div>

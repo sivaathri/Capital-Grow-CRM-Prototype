@@ -625,7 +625,7 @@ export const EducationLoanPage = () => {
 
             {/* Qualification Table (Single empty row by default, completely empty inputs) */}
             <div className="overflow-x-auto border border-cg-border rounded-xl">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left text-xs min-w-[550px]">
                 <thead>
                   <tr className="bg-gray-50 border-b border-cg-border text-cg-muted font-bold uppercase tracking-wider">
                     <th className="py-2.5 px-3 w-1/4">EXAM / COURSE</th>
@@ -977,7 +977,7 @@ export const EducationLoanPage = () => {
           {/* Table */}
           {filteredList.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left text-xs min-w-[850px]">
                 <thead>
                   <tr className="bg-gray-50 border-b border-cg-border text-cg-muted font-bold uppercase tracking-wider">
                     <th className="py-3 px-3">Enquiry ID</th>
@@ -1116,8 +1116,8 @@ export const EducationLoanPage = () => {
 
           {/* Quick Login Modal from Education Loans table */}
           {quickLoginModal.isOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in">
-              <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-cg-border space-y-4 animate-scale-up">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
+              <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 my-auto max-h-[92vh] overflow-y-auto shadow-2xl border border-cg-border space-y-4 animate-scale-up">
                 <div className="flex items-center justify-between border-b border-cg-border pb-3">
                   <h3 className="text-base font-bold text-cg-navy">
                     Move to Bank Login: {quickLoginModal.item?.studentName}

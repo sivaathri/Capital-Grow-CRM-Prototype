@@ -478,7 +478,7 @@ export const UserManagementPage = () => {
             /* VIEW 1: DATA TABLE                                       */
             /* ======================================================== */
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left text-xs min-w-[650px]">
                 <thead>
                   <tr className="bg-gray-50 border-b border-cg-border text-cg-muted font-bold uppercase tracking-wider">
                     <th className="py-3 px-3">Staff Member</th>
@@ -745,8 +745,8 @@ export const UserManagementPage = () => {
       {/* MODAL 1: ADD NEW USER                                    */}
       {/* ======================================================== */}
       {addUserModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-cg-border space-y-4 animate-scale-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 my-auto max-h-[92vh] overflow-y-auto shadow-2xl border border-cg-border space-y-4 animate-scale-up">
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
@@ -858,8 +858,8 @@ export const UserManagementPage = () => {
       {/* MODAL 2: EDIT USER                                       */}
       {/* ======================================================== */}
       {editUserModal.isOpen && editUserModal.user && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-cg-border space-y-4 animate-scale-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-5 sm:p-6 my-auto max-h-[92vh] overflow-y-auto shadow-2xl border border-cg-border space-y-4 animate-scale-up">
             <div className="flex items-center justify-between border-b border-cg-border pb-3">
               <h3 className="text-base font-bold text-cg-navy">Edit Staff Member: {editUserModal.user.name}</h3>
               <button
@@ -970,8 +970,8 @@ export const UserManagementPage = () => {
       {/* MODAL 3: VIEW USER PROFILE / PERFORMANCE                 */}
       {/* ======================================================== */}
       {viewUserModal.isOpen && viewUserModal.user && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-cg-border space-y-5 animate-scale-up text-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-5 sm:p-6 my-auto max-h-[92vh] overflow-y-auto shadow-2xl border border-cg-border space-y-5 animate-scale-up text-xs">
             {/* Header */}
             <div className="flex items-start justify-between border-b border-cg-border pb-4">
               <div className="flex items-center gap-3.5">
@@ -1084,8 +1084,8 @@ export const UserManagementPage = () => {
       {/* MODAL 4: PERMISSIONS MATRIX (RBAC)                       */}
       {/* ======================================================== */}
       {permissionsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-cg-border space-y-4 animate-scale-up text-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-5 sm:p-6 my-auto max-h-[92vh] overflow-y-auto shadow-2xl border border-cg-border space-y-4 animate-scale-up text-xs">
             <div className="flex items-center justify-between border-b border-cg-border pb-3">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-purple-600" />
@@ -1105,8 +1105,8 @@ export const UserManagementPage = () => {
               <b>Payments</b> and <b>User Management</b> are restricted to Admin accounts only.
             </p>
 
-            <div className="border border-cg-border rounded-xl overflow-hidden">
-              <table className="w-full text-left text-xs">
+            <div className="border border-cg-border rounded-xl overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[420px]">
                 <thead className="bg-gray-50 border-b border-cg-border text-cg-navy font-bold">
                   <tr>
                     <th className="p-3">CRM Capability / Module</th>

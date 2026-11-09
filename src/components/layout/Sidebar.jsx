@@ -70,6 +70,7 @@ export const Sidebar = () => {
       setOpenSub(openSub === item.id ? null : item.id);
     } else {
       navigate(item.id);
+      setIsMobileNavOpen(false);
     }
   };
 
@@ -167,7 +168,10 @@ export const Sidebar = () => {
                         <button
                           key={sub.id}
                           type="button"
-                          onClick={() => navigate(sub.id)}
+                          onClick={() => {
+                            navigate(sub.id);
+                            setIsMobileNavOpen(false);
+                          }}
                           className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors
                             ${isSubActive
                               ? 'bg-white/20 text-white font-semibold'
