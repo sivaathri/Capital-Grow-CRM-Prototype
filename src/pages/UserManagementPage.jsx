@@ -31,7 +31,9 @@ import {
   Eye,
   MoreVertical,
   Activity,
-  Award
+  Award,
+  ChevronDown,
+  X
 } from 'lucide-react';
 
 const INITIAL_STAFF_USERS = [
@@ -40,7 +42,7 @@ const INITIAL_STAFF_USERS = [
     name: 'Admin User',
     email: 'admin@capitalgrow.co.in',
     mobile: '9840012345',
-    role: 'Super Admin',
+    role: 'Admin',
     branch: 'Chennai HQ',
     status: 'Active',
     assignedLeads: 54,
@@ -51,10 +53,24 @@ const INITIAL_STAFF_USERS = [
   },
   {
     id: 'CG-EMP-102',
+    name: 'Divya Ramesh',
+    email: 'divya.r@capitalgrow.co.in',
+    mobile: '9840188990',
+    role: 'User',
+    branch: 'Chennai HQ',
+    status: 'Active',
+    assignedLeads: 32,
+    conversionRate: '45.0%',
+    joinedDate: '2025-01-10',
+    lastActive: '5 mins ago',
+    permissions: ['Lead Enquiries', 'Bank Logins', 'Customer Profiles', 'Follow-up Calls']
+  },
+  {
+    id: 'CG-EMP-103',
     name: 'Meena R',
     email: 'meena.r@capitalgrow.co.in',
     mobile: '9840198765',
-    role: 'Senior Counselor',
+    role: 'User',
     branch: 'Adyar Branch',
     status: 'Active',
     assignedLeads: 36,
@@ -64,11 +80,11 @@ const INITIAL_STAFF_USERS = [
     permissions: ['Lead Enquiries', 'Bank Logins', 'Customer Profiles', 'Follow-up Calls']
   },
   {
-    id: 'CG-EMP-103',
-    name: 'Arun K',
+    id: 'CG-EMP-104',
+    name: 'Arun Kumar',
     email: 'arun.k@capitalgrow.co.in',
     mobile: '9840254321',
-    role: 'Loan Counselor',
+    role: 'User',
     branch: 'T. Nagar Branch',
     status: 'Active',
     assignedLeads: 29,
@@ -78,11 +94,11 @@ const INITIAL_STAFF_USERS = [
     permissions: ['Lead Enquiries', 'Bank Logins', 'Customer Profiles', 'Follow-up Calls']
   },
   {
-    id: 'CG-EMP-104',
+    id: 'CG-EMP-105',
     name: 'Kavitha S',
     email: 'kavitha.s@capitalgrow.co.in',
     mobile: '9840311223',
-    role: 'Loan Counselor',
+    role: 'User',
     branch: 'Anna Nagar Branch',
     status: 'Active',
     assignedLeads: 24,
@@ -92,25 +108,25 @@ const INITIAL_STAFF_USERS = [
     permissions: ['Lead Enquiries', 'Bank Logins', 'Customer Profiles', 'Follow-up Calls']
   },
   {
-    id: 'CG-EMP-105',
+    id: 'CG-EMP-106',
     name: 'Rajesh Kumar',
     email: 'rajesh.k@capitalgrow.co.in',
     mobile: '9840499887',
-    role: 'Branch Manager',
+    role: 'Admin',
     branch: 'Coimbatore Branch',
     status: 'Active',
     assignedLeads: 18,
     conversionRate: '44.1%',
     joinedDate: '2025-07-01',
     lastActive: 'Yesterday',
-    permissions: ['Branch Enquiries', 'Bank Logins', 'Team Monitoring', 'Sanction Review']
+    permissions: ['All Modules', 'Payments & Payouts', 'User Management', 'Sanctions', 'Decline Approval']
   },
   {
-    id: 'CG-EMP-106',
+    id: 'CG-EMP-107',
     name: 'Suresh Iyer',
     email: 'suresh.i@capitalgrow.co.in',
     mobile: '9840566778',
-    role: 'Loan Counselor',
+    role: 'User',
     branch: 'Madurai Branch',
     status: 'Inactive',
     assignedLeads: 6,
@@ -123,26 +139,14 @@ const INITIAL_STAFF_USERS = [
 
 const ROLES_LIST = [
   {
-    role: 'Super Admin',
-    desc: 'Unrestricted full access to Payments, User Management, Bank Logins, and CRM Settings.',
+    role: 'Admin',
+    desc: 'Full administrator access to Payments, User Management, Bank Logins, Sanctions, and System Settings.',
     color: 'bg-purple-100 text-purple-800 border-purple-200',
     badgeBg: 'bg-purple-500'
   },
   {
-    role: 'Branch Manager',
-    desc: 'Branch oversight, lead reassignments, bank logins, and sanction monitoring.',
-    color: 'bg-amber-100 text-amber-800 border-amber-200',
-    badgeBg: 'bg-amber-500'
-  },
-  {
-    role: 'Senior Counselor',
-    desc: 'Manage student loan enquiries, lead tracking, university counseling, and bank logins.',
-    color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    badgeBg: 'bg-emerald-500'
-  },
-  {
-    role: 'Loan Counselor',
-    desc: 'Handle day-to-day lead follow-ups, document collection, and login applications.',
+    role: 'User',
+    desc: 'Standard counselor & staff access to Enquiries, Leads, and Bank Logins (Payments & User Mgmt restricted).',
     color: 'bg-blue-100 text-blue-800 border-blue-200',
     badgeBg: 'bg-blue-500'
   }
@@ -166,7 +170,7 @@ export const UserManagementPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [branchFilter, setBranchFilter] = useState('');
-  const [activeTab, setActiveTab] = useState('all'); // 'all', 'admins', 'counselors', 'inactive', 'permissions'
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'users', 'admins', 'inactive'
   const [viewMode, setViewMode] = useState('table'); // 'table' or 'grid'
 
   // Modals
@@ -180,7 +184,7 @@ export const UserManagementPage = () => {
     name: '',
     email: '',
     mobile: '',
-    role: 'Loan Counselor',
+    role: 'User',
     branch: 'Chennai HQ',
     status: 'Active',
     tempPassword: ''
@@ -198,7 +202,7 @@ export const UserManagementPage = () => {
 
     let matchesTab = true;
     if (activeTab === 'admins') matchesTab = u.role.includes('Admin');
-    else if (activeTab === 'counselors') matchesTab = u.role.includes('Counselor');
+    else if (activeTab === 'users' || activeTab === 'counselors') matchesTab = u.role === 'User';
     else if (activeTab === 'inactive') matchesTab = u.status === 'Inactive';
 
     return matchesSearch && matchesRole && matchesBranch && matchesTab;
@@ -208,7 +212,7 @@ export const UserManagementPage = () => {
   const totalStaff = usersList.length;
   const activeCount = usersList.filter((u) => u.status === 'Active').length;
   const adminCount = usersList.filter((u) => u.role.includes('Admin')).length;
-  const counselorCount = usersList.filter((u) => u.role.includes('Counselor')).length;
+  const userCount = usersList.filter((u) => u.role === 'User').length;
   const totalAssignedLeads = usersList.reduce((acc, u) => acc + (u.assignedLeads || 0), 0);
 
   // Handlers
@@ -225,9 +229,9 @@ export const UserManagementPage = () => {
       assignedLeads: 0,
       conversionRate: '0.0%',
       joinedDate: new Date().toISOString().slice(0, 10),
-      lastActive: 'Never',
+      lastActive: 'Just created',
       permissions:
-        formData.role === 'Super Admin'
+        formData.role === 'Admin'
           ? ['All Modules', 'Payments & Payouts', 'User Management', 'Sanctions', 'Decline Approval']
           : ['Lead Enquiries', 'Bank Logins', 'Customer Profiles', 'Follow-up Calls']
     };
@@ -292,12 +296,10 @@ export const UserManagementPage = () => {
 
   const getRoleBadge = (role) => {
     switch (role) {
+      case 'Admin':
       case 'Super Admin':
         return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'Branch Manager':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'Senior Counselor':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 'User':
       default:
         return 'bg-blue-100 text-blue-800 border-blue-200';
     }
@@ -377,12 +379,12 @@ export const UserManagementPage = () => {
           </div>
         </div>
 
-        {/* Card 2: Loan Counselors */}
+        {/* Card 2: Standard Users */}
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-cg-border shadow-card flex items-center justify-between">
           <div>
-            <span className="text-[11px] font-bold text-cg-muted uppercase tracking-wider block">Loan Counselors</span>
-            <div className="text-3xl font-black text-cg-blue mt-0.5">{counselorCount}</div>
-            <span className="text-[11px] text-cg-muted font-medium mt-1 block">Overseas study advisors</span>
+            <span className="text-[11px] font-bold text-cg-muted uppercase tracking-wider block">Standard Users</span>
+            <div className="text-3xl font-black text-cg-blue mt-0.5">{userCount}</div>
+            <span className="text-[11px] text-cg-muted font-medium mt-1 block">Operations &amp; counselor staff</span>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-orange-50 text-cg-orange flex items-center justify-center font-bold">
             <UserCheck className="w-6 h-6" />
@@ -404,9 +406,9 @@ export const UserManagementPage = () => {
         {/* Card 4: Admins & Branches */}
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-cg-border shadow-card flex items-center justify-between">
           <div>
-            <span className="text-[11px] font-bold text-cg-muted uppercase tracking-wider block">Admins &amp; Branches</span>
+            <span className="text-[11px] font-bold text-cg-muted uppercase tracking-wider block">Administrators</span>
             <div className="text-3xl font-black text-purple-600 mt-0.5">{adminCount}</div>
-            <span className="text-[11px] text-purple-700 font-semibold mt-1 block">Across 6 branch offices</span>
+            <span className="text-[11px] text-purple-700 font-semibold mt-1 block">Full CRM &amp; Payments access</span>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
             <ShieldCheck className="w-6 h-6" />
@@ -427,16 +429,16 @@ export const UserManagementPage = () => {
                 activeTab === 'all' ? 'bg-white text-cg-navy shadow-sm' : 'text-cg-muted hover:text-cg-text'
               }`}
             >
-              All Staff ({usersList.length})
+              All Users ({usersList.length})
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('counselors')}
+              onClick={() => setActiveTab('users')}
               className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
-                activeTab === 'counselors' ? 'bg-white text-cg-navy shadow-sm' : 'text-cg-muted hover:text-cg-text'
+                activeTab === 'users' ? 'bg-white text-cg-navy shadow-sm' : 'text-cg-muted hover:text-cg-text'
               }`}
             >
-              Counselors ({counselorCount})
+              Users ({userCount})
             </button>
             <button
               type="button"
@@ -445,7 +447,7 @@ export const UserManagementPage = () => {
                 activeTab === 'admins' ? 'bg-white text-cg-navy shadow-sm' : 'text-cg-muted hover:text-cg-text'
               }`}
             >
-              Administrators ({adminCount})
+              Admins ({adminCount})
             </button>
             <button
               type="button"
@@ -460,21 +462,31 @@ export const UserManagementPage = () => {
 
           {/* Search, Filter & View Toggle */}
           <div className="flex flex-wrap items-center gap-2.5">
-            <div className="relative flex-1 sm:w-64">
+            <div className="relative flex-1 sm:w-60">
               <Search className="w-4 h-4 text-cg-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search staff name, email, branch..."
+                placeholder="Search user name, email, branch..."
                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-cg-border text-xs text-cg-text focus:outline-none focus:border-cg-blue"
               />
             </div>
 
             <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="px-3 py-2 rounded-xl border border-cg-border text-xs text-cg-text bg-white focus:outline-none focus:border-cg-blue font-medium"
+            >
+              <option value="">All Roles</option>
+              <option value="Admin">Admin</option>
+              <option value="User">User</option>
+            </select>
+
+            <select
               value={branchFilter}
               onChange={(e) => setBranchFilter(e.target.value)}
-              className="px-3 py-2 rounded-xl border border-cg-border text-xs text-cg-text bg-white focus:outline-none focus:border-cg-blue"
+              className="px-3 py-2 rounded-xl border border-cg-border text-xs text-cg-text bg-white focus:outline-none focus:border-cg-blue font-medium"
             >
               <option value="">All Branches</option>
               {BRANCHES.map((b) => (
@@ -819,101 +831,105 @@ export const UserManagementPage = () => {
       {/* ======================================================== */}
       {addUserModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cg-navy/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-cg-border space-y-4 animate-scale-up">
-            <div className="flex items-center justify-between border-b border-cg-border pb-3">
-              <div className="flex items-center gap-2">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-cg-border space-y-4 animate-scale-up">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
                 <Users className="w-5 h-5 text-cg-orange" />
-                <h3 className="text-base font-bold text-cg-navy">Add New Staff Member</h3>
+                <h3 className="text-lg font-bold text-cg-navy">Add New Staff Member</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setAddUserModal(false)}
-                className="text-cg-muted hover:text-cg-text font-bold text-sm"
+                className="text-gray-400 hover:text-cg-navy transition-colors p-1 rounded-lg"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateUser} className="space-y-4 text-xs">
+              {/* Full Name */}
               <div>
-                <label className="block text-xs font-bold text-cg-navy mb-1">Full Name *</label>
+                <label className="block text-xs font-bold text-cg-navy mb-1.5">Full Name *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Divya Ramesh"
                   value={formData.name}
                   onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-xs text-cg-text focus:outline-none focus:border-cg-blue"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs text-cg-navy placeholder-gray-400 focus:outline-none focus:border-cg-blue"
                 />
               </div>
 
+              {/* Email & Mobile (2 cols) */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-cg-navy mb-1">Email *</label>
+                  <label className="block text-xs font-bold text-cg-navy mb-1.5">Email *</label>
                   <input
                     type="email"
                     required
                     placeholder="divya.r@capitalgrow.co.in"
                     value={formData.email}
                     onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-xs text-cg-text focus:outline-none focus:border-cg-blue"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs text-cg-navy placeholder-gray-400 focus:outline-none focus:border-cg-blue"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-cg-navy mb-1">Mobile *</label>
+                  <label className="block text-xs font-bold text-cg-navy mb-1.5">Mobile *</label>
                   <input
                     type="tel"
                     required
                     placeholder="9840XXXXXX"
                     value={formData.mobile}
                     onChange={(e) => setFormData((prev) => ({ ...prev, mobile: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-xs text-cg-text focus:outline-none focus:border-cg-blue"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs text-cg-navy placeholder-gray-400 focus:outline-none focus:border-cg-blue"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-cg-navy mb-1">System Role *</label>
+              {/* System Role * */}
+              <div>
+                <label className="block text-xs font-bold text-cg-navy mb-1.5">System Role *</label>
+                <div className="relative">
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData((prev) => ({ ...prev, role: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-xs text-cg-text bg-white focus:outline-none focus:border-cg-blue font-medium"
+                    className="w-full appearance-none px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs text-cg-navy bg-white focus:outline-none focus:border-cg-blue font-medium cursor-pointer pr-10"
                   >
-
-                    <option value="User">User </option>
+                    <option value="User">User</option>
                     <option value="Admin">Admin</option>
                   </select>
+                  <ChevronDown className="w-4 h-4 text-cg-navy absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
-
-                
               </div>
 
+              {/* Default Initial Password */}
               <div>
-                <label className="block text-xs font-bold text-cg-navy mb-1">Default Initial Password</label>
+                <label className="block text-xs font-bold text-cg-navy mb-1.5">Default Initial Password</label>
                 <div className="relative">
-                  <Key className="w-3.5 h-3.5 text-cg-muted absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Key className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={formData.tempPassword}
                     onChange={(e) => setFormData((prev) => ({ ...prev, tempPassword: e.target.value }))}
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-cg-border text-xs font-mono text-cg-text bg-gray-50 focus:outline-none focus:border-cg-blue"
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-xs text-cg-navy bg-white focus:outline-none focus:border-cg-blue"
                   />
                 </div>
-                <span className="text-[10px] text-cg-muted mt-1 block">Staff will be prompted to reset upon first login.</span>
+                <p className="text-[11px] text-gray-400 mt-1.5">Staff will be prompted to reset upon first login.</p>
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-2">
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setAddUserModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-cg-muted hover:text-cg-text border border-cg-border"
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 bg-white hover:bg-gray-50 border border-gray-200 transition-colors shadow-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cg-orange to-cg-orange-hover shadow-orange"
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-cg-orange hover:bg-cg-orange-hover shadow-orange transition-all"
                 >
                   Create &amp; Send Credentials
                 </button>
@@ -977,16 +993,14 @@ export const UserManagementPage = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-cg-navy mb-1">Role</label>
+                  <label className="block text-xs font-bold text-cg-navy mb-1">System Role *</label>
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData((prev) => ({ ...prev, role: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-xs bg-white font-medium"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-xs bg-white font-medium focus:outline-none focus:border-cg-blue"
                   >
-                    <option value="Loan Counselor">Loan Counselor</option>
-                    <option value="Senior Counselor">Senior Counselor</option>
-                    <option value="Branch Manager">Branch Manager</option>
-                    <option value="Super Admin">Super Admin</option>
+                    <option value="User">User</option>
+                    <option value="Admin">Admin</option>
                   </select>
                 </div>
                 <div>
@@ -994,7 +1008,7 @@ export const UserManagementPage = () => {
                   <select
                     value={formData.branch}
                     onChange={(e) => setFormData((prev) => ({ ...prev, branch: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-xs bg-white font-medium"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-xs bg-white font-medium focus:outline-none focus:border-cg-blue"
                   >
                     {BRANCHES.map((b) => (
                       <option key={b} value={b}>
@@ -1010,7 +1024,7 @@ export const UserManagementPage = () => {
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-xs bg-white font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-cg-border text-xs bg-white font-medium focus:outline-none focus:border-cg-blue"
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive / Suspended</option>
@@ -1181,9 +1195,8 @@ export const UserManagementPage = () => {
                 <thead className="bg-gray-50 border-b border-cg-border text-cg-navy font-bold">
                   <tr>
                     <th className="p-3">CRM Capability / Module</th>
-                    <th className="p-3 text-center">Super Admin</th>
-                    <th className="p-3 text-center">Branch Manager</th>
-                    <th className="p-3 text-center">Counselor</th>
+                    <th className="p-3 text-center">Admin</th>
+                    <th className="p-3 text-center">User</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-cg-border">
@@ -1191,11 +1204,9 @@ export const UserManagementPage = () => {
                     <td className="p-3 font-semibold text-cg-navy">1. Enquiries &amp; Leads Entry</td>
                     <td className="p-3 text-center text-emerald-600 font-bold">✓ Full</td>
                     <td className="p-3 text-center text-emerald-600 font-bold">✓ Full</td>
-                    <td className="p-3 text-center text-emerald-600 font-bold">✓ Full</td>
                   </tr>
                   <tr>
                     <td className="p-3 font-semibold text-cg-navy">2. Bank Login Details (Bank, SM, App No)</td>
-                    <td className="p-3 text-center text-emerald-600 font-bold">✓ Full</td>
                     <td className="p-3 text-center text-emerald-600 font-bold">✓ Full</td>
                     <td className="p-3 text-center text-emerald-600 font-bold">✓ Full</td>
                   </tr>
@@ -1203,26 +1214,22 @@ export const UserManagementPage = () => {
                     <td className="p-3 font-semibold text-cg-navy">3. Loan Sanction &amp; Decline Decisions</td>
                     <td className="p-3 text-center text-emerald-600 font-bold">✓ Full</td>
                     <td className="p-3 text-center text-emerald-600 font-bold">✓ Full</td>
-                    <td className="p-3 text-center text-amber-600 font-bold">Review Only</td>
                   </tr>
                   <tr className="bg-purple-50/50">
                     <td className="p-3 font-bold text-purple-900">
                       4. Payments &amp; Payouts (Bank, Customer, Vendor)
                     </td>
                     <td className="p-3 text-center text-emerald-600 font-bold">✓ Full (Admin Only)</td>
-                    <td className="p-3 text-center text-rose-500 font-bold">✕ Hidden</td>
-                    <td className="p-3 text-center text-rose-500 font-bold">✕ Hidden</td>
+                    <td className="p-3 text-center text-rose-500 font-bold">✕ Hidden (No Access)</td>
                   </tr>
                   <tr className="bg-purple-50/50">
-                    <td className="p-3 font-bold text-purple-900">5. User &amp; Counselor Management</td>
+                    <td className="p-3 font-bold text-purple-900">5. User Management</td>
                     <td className="p-3 text-center text-emerald-600 font-bold">✓ Full (Admin Only)</td>
-                    <td className="p-3 text-center text-rose-500 font-bold">✕ Hidden</td>
-                    <td className="p-3 text-center text-rose-500 font-bold">✕ Hidden</td>
+                    <td className="p-3 text-center text-rose-500 font-bold">✕ Hidden (No Access)</td>
                   </tr>
                   <tr>
                     <td className="p-3 font-semibold text-cg-navy">6. System Settings &amp; Data Reset</td>
                     <td className="p-3 text-center text-emerald-600 font-bold">✓ Full</td>
-                    <td className="p-3 text-center text-rose-500 font-bold">✕ No</td>
                     <td className="p-3 text-center text-rose-500 font-bold">✕ No</td>
                   </tr>
                 </tbody>
