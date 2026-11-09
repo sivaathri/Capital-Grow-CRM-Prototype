@@ -22,7 +22,8 @@ import {
   Phone,
   Calendar,
   Sparkles,
-  FileCheck
+  FileCheck,
+  Copy
 } from 'lucide-react';
 
 const COUNTRIES = [
@@ -53,11 +54,37 @@ const CO_APP_OCCUPATIONS = [
 ];
 
 export const EducationLoanPage = () => {
-  const { educationLoans, addEducationLoan, deleteEducationLoan, saveLoginDetails, route, navigate, confirm } = useApp();
+  const { educationLoans, addEducationLoan, deleteEducationLoan, saveLoginDetails, route, navigate, confirm, addToast } = useApp();
 
   const [activeTab, setActiveTab] = useState('form'); // 'form' or 'list'
   const [formStep, setFormStep] = useState(1); // 1 = Form 1: Student Details & Academics, 2 = Form 2: Co-Applicant & References
   const [viewSlipId, setViewSlipId] = useState(null);
+
+  // Helper to calculate the next unique sequential enquiry number (e.g. CG-EDU-2026-0005)
+  const getNextUniqueNo = () => {
+    const year = new Date().getFullYear();
+    let maxSeq = 4;
+    educationLoans.forEach((item) => {
+      if (item.id && typeof item.id === 'string') {
+        const parts = item.id.split('-');
+        const lastPart = parseInt(parts[parts.length - 1], 10);
+        if (!isNaN(lastPart) && lastPart > maxSeq) {
+          maxSeq = lastPart;
+        }
+      }
+    });
+    return `CG-EDU-${year}-${String(maxSeq + 1).padStart(4, '0')}`;
+  };
+
+  const [formUniqueId, setFormUniqueId] = useState(getNextUniqueNo);
+  const [copiedId, setCopiedId] = useState(false);
+
+  const handleCopyId = () => {
+    navigator.clipboard?.writeText(formUniqueId);
+    setCopiedId(true);
+    if (addToast) addToast(`Copied Application Unique Ref No: ${formUniqueId}`, 'ok');
+    setTimeout(() => setCopiedId(false), 2000);
+  };
 
   // Quick Login Modal from Education Loan page
   const [quickLoginModal, setQuickLoginModal] = useState({ isOpen: false, item: null });
@@ -252,12 +279,14 @@ export const EducationLoanPage = () => {
 
     const newRecord = addEducationLoan({
       ...formData,
+      id: formUniqueId,
       education: validEdu,
       loanAmount: formData.loanAmount.startsWith('₹') ? formData.loanAmount : `₹ ${formData.loanAmount}`
     });
 
     setFormData(initialFormState);
     setFormStep(1);
+    setFormUniqueId(getNextUniqueNo());
     navigate('education-loan', 'view', newRecord.id);
   };
 
@@ -267,6 +296,7 @@ export const EducationLoanPage = () => {
       setFormData(initialFormState);
       setFormErrors({});
       setFormStep(1);
+      setFormUniqueId(getNextUniqueNo());
     }
   };
 
@@ -327,6 +357,68 @@ export const EducationLoanPage = () => {
         /* ENQUIRY FORM VIEW                                              */
         /* ============================================================== */
         <form onSubmit={handleSubmit} noValidate className="space-y-6">
+          {/* ============================================================== */}
+          {/* TOP UNIQUE APPLICATION NUMBER BANNER                            */}
+          {/* ============================================================== */}
+          <div className="bg-gradient-to-r from-cg-navy via-[#0d2a4d] to-cg-blue rounded-2xl p-4 sm:p-5 text-white shadow-card border border-blue-900/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center text-cg-orange border border-white/20 shrink-0">
+                <FileCheck className="w-6 h-6 text-cg-orange" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-extrabold uppercase tracking-widest text-orange-300">
+                    Unique Application Reference No.
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Auto-Generated Unique ID
+                  </span>
+                </div>
+                <div className="flex items-center gap-2.5 mt-1">
+                  <span className="font-mono text-xl sm:text-2xl font-black tracking-wider text-white drop-shadow-sm select-all">
+                    {formUniqueId}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyId}
+                    className="p-1.5 px-2.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs transition-all flex items-center gap-1.5 border border-white/20"
+                    title="Copy Unique ID to clipboard"
+                  >
+                    {copiedId ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-[11px] font-bold text-emerald-300">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span className="text-[11px] font-semibold">Copy ID</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                <p className="text-[11px] text-white/70 mt-0.5">
+                  Lifecycle Tracking: <b>Enquiry</b> &rarr; <b>Lead</b> &rarr; <b>Bank Login</b> &rarr; <b>Sanction</b> &rarr; <b>Disbursement / Payouts</b>
+                </p>
+              </div>
+            </div>
+
+            {/* Right Meta Badges */}
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 pt-2 md:pt-0 border-t md:border-t-0 border-white/10">
+              <div className="px-3.5 py-2 rounded-xl bg-white/10 border border-white/15 text-center min-w-[105px]">
+                <span className="text-[10px] text-white/70 uppercase font-bold block">Application Date</span>
+                <b className="text-xs font-bold text-white block mt-0.5">{formData.date || todayStr}</b>
+              </div>
+              <div className="px-3.5 py-2 rounded-xl bg-white/10 border border-white/15 text-center min-w-[120px]">
+                <span className="text-[10px] text-white/70 uppercase font-bold block">Current Step</span>
+                <b className="text-xs font-bold text-orange-300 block mt-0.5">
+                  {formStep === 1 ? '1. Student Details' : '2. Co-Applicant'}
+                </b>
+              </div>
+            </div>
+          </div>
+
           {/* Form 1 vs Form 2 Dual Form Switcher */}
           <div className="bg-white rounded-2xl p-2.5 sm:p-3 border border-cg-border shadow-card flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="inline-flex bg-gray-100 p-1.5 rounded-xl w-full sm:w-auto gap-1">
@@ -386,9 +478,14 @@ export const EducationLoanPage = () => {
                   <p className="text-xs text-cg-muted">Application date, consultancy partner, and requested loan amount</p>
                 </div>
               </div>
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-cg-blue">
-                Step 1 of 4
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-blue-50 text-cg-blue border border-blue-200">
+                  Unique Ref: {formUniqueId}
+                </span>
+                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-cg-blue">
+                  Step 1 of 4
+                </span>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -626,7 +723,7 @@ export const EducationLoanPage = () => {
                       }`}>
                         {formData.residenceType === r && '✓'}
                       </span>
-                      <span>{r === 'Self Owned' ? '☑ Self Owned' : '☐ Rented @'}</span>
+                      <span>{r === 'Self Owned' ? 'Self Owned' : 'Rented'}</span>
                     </button>
                   ))}
                 </div>
@@ -723,7 +820,7 @@ export const EducationLoanPage = () => {
                   B
                 </span>
                 <div>
-                  <h3 className="text-base font-bold text-cg-navy">12 Educational Details</h3>
+                  <h3 className="text-base font-bold text-cg-navy">Educational Details</h3>
                   <p className="text-xs text-cg-muted">Academic track record, entrance examination score, and degrees obtained</p>
                 </div>
               </div>
@@ -898,7 +995,7 @@ export const EducationLoanPage = () => {
                   C
                 </span>
                 <div>
-                  <h3 className="text-base font-bold text-cg-navy">B COURSE DETAILS</h3>
+                  <h3 className="text-base font-bold text-cg-navy">COURSE DETAILS</h3>
                   <p className="text-xs text-cg-muted">Admission status, study destination, university, and proposed program</p>
                 </div>
               </div>
@@ -928,7 +1025,7 @@ export const EducationLoanPage = () => {
                       }`}>
                         {formData.admissionStatus === status && '✓'}
                       </span>
-                      <span>{status === 'Confirmed' ? '☑ Confirmed' : '☐ Awaited'}</span>
+                      <span>{status === 'Confirmed' ? 'Confirmed' : 'Awaited'}</span>
                     </button>
                   ))}
                 </div>
@@ -1047,9 +1144,14 @@ export const EducationLoanPage = () => {
                   </p>
                 </div>
               </div>
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-cg-orange">
-                Form 2 · Section C
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-orange-50 text-cg-orange border border-orange-200">
+                  Unique Ref: {formUniqueId}
+                </span>
+                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-cg-orange">
+                  Form 2 · Section C
+                </span>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -1420,9 +1522,12 @@ export const EducationLoanPage = () => {
 
       {/* Sticky Submit Bar */}
       <div className="sticky bottom-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/95 backdrop-blur-md border border-cg-border rounded-2xl shadow-dropdown">
-        <div className="flex items-center gap-2 text-xs text-cg-muted">
-          <Shield className="w-4 h-4 text-cg-orange" />
-          <span>
+        <div className="flex items-center gap-2.5 text-xs text-cg-muted">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-cg-navy font-mono font-bold text-xs shrink-0">
+            <span className="text-[10px] text-cg-blue font-sans font-semibold">Unique ID:</span>
+            <span>{formUniqueId}</span>
+          </div>
+          <span className="hidden md:inline">
             {formStep === 1
               ? 'Form 1 of 2: Student Details & Academics • Fill Form 1 then proceed to Form 2 to submit'
               : 'Form 2 of 2: Co-Applicant, Employment & Reference • Review & submit loan application'}
