@@ -28,17 +28,14 @@ const NAV_ITEMS = [
     ]
   },
   { id: 'login-status', label: 'Login Status Details', icon: Building2 },
-  
   { id: 'banks', label: 'Bank Management', icon: Landmark },
- 
-  { id: 'payments', label: 'Payments', icon: CreditCard },
-  
-  { id: 'users', label: 'User Management', icon: Users },
- 
+  { id: 'payments', label: 'Payments', icon: CreditCard, adminOnly: true },
+  { id: 'users', label: 'User Management', icon: Users, adminOnly: true }
 ];
 
 export const Sidebar = () => {
   const {
+    user,
     route,
     navigate,
     customers,
@@ -46,6 +43,18 @@ export const Sidebar = () => {
     isMobileNavOpen,
     setIsMobileNavOpen
   } = useApp();
+
+  const isAdmin = Boolean(
+    user?.role?.toLowerCase().includes('admin') ||
+    user?.email?.toLowerCase().includes('admin')
+  );
+
+  const visibleNavItems = NAV_ITEMS.filter((item) => {
+    if (item.adminOnly || item.id === 'payments' || item.id === 'users') {
+      return isAdmin;
+    }
+    return true;
+  });
 
   const loginCount = customers?.filter((c) => c.status === 'Login').length || 0;
   const paymentCount = customers?.filter((c) => c.status === 'Disbursement').length || 0;
@@ -106,7 +115,7 @@ export const Sidebar = () => {
 
         {/* Navigation list */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto bg-gradient-to-b from-cg-navy to-cg-blue rounded-tr-3xl text-white">
-          {NAV_ITEMS.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const active = isCurrentActive(item);
             const isSubOpen = openSub === item.id;
@@ -117,10 +126,9 @@ export const Sidebar = () => {
                   type="button"
                   onClick={() => handleNavClick(item)}
                   className={`w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 text-left
-                    ${
-                      active && !item.subItems
-                        ? 'bg-gradient-to-r from-cg-orange to-cg-orange-hover text-white shadow-orange'
-                        : 'text-white/80 hover:bg-white/10 hover:text-white'
+                    ${active && !item.subItems
+                      ? 'bg-gradient-to-r from-cg-orange to-cg-orange-hover text-white shadow-orange'
+                      : 'text-white/80 hover:bg-white/10 hover:text-white'
                     }
                     ${isSidebarCollapsed ? 'justify-center px-0' : ''}
                   `}
@@ -142,9 +150,8 @@ export const Sidebar = () => {
                       )}
                       {item.subItems && (
                         <ChevronDown
-                          className={`w-4 h-4 transition-transform duration-200 ${
-                            isSubOpen ? 'rotate-180' : ''
-                          }`}
+                          className={`w-4 h-4 transition-transform duration-200 ${isSubOpen ? 'rotate-180' : ''
+                            }`}
                         />
                       )}
                     </>
@@ -162,10 +169,9 @@ export const Sidebar = () => {
                           type="button"
                           onClick={() => navigate(sub.id)}
                           className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors
-                            ${
-                              isSubActive
-                                ? 'bg-white/20 text-white font-semibold'
-                                : 'text-blue-100 hover:text-white hover:bg-white/10'
+                            ${isSubActive
+                              ? 'bg-white/20 text-white font-semibold'
+                              : 'text-blue-100 hover:text-white hover:bg-white/10'
                             }
                           `}
                         >

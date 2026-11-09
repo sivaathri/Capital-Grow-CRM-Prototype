@@ -143,8 +143,38 @@ export const LoginPage = () => {
               Log in
             </button>
 
-            <div className="p-3.5 bg-cg-light-blue rounded-xl border border-blue-100 text-xs text-cg-blue text-center">
-              <b>Demo Credentials:</b> admin@capitalgrow.co.in / Admin@123
+            <div className="p-3.5 bg-cg-light-blue rounded-xl border border-blue-100 text-xs text-cg-blue space-y-2">
+              <div className="font-bold text-center">Demo Quick Login Credentials:</div>
+              <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsername('admin@capitalgrow.co.in');
+                    setPassword('Admin@123');
+                  }}
+                  className="p-2 bg-white rounded-lg border border-blue-200 text-left hover:bg-blue-50 transition-colors"
+                >
+                  <b className="block text-cg-navy font-bold">Admin (Full Access)</b>
+                  <span className="text-[10px] text-cg-muted block truncate">admin@capitalgrow.co.in</span>
+                  <span className="text-[10px] text-cg-blue font-bold">Admin@123</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsername('user@capitalgrow.co.in');
+                    setPassword('User@123');
+                  }}
+                  className="p-2 bg-white rounded-lg border border-blue-200 text-left hover:bg-blue-50 transition-colors"
+                >
+                  <b className="block text-cg-navy font-bold">User (Staff / Counselor)</b>
+                  <span className="text-[10px] text-cg-muted block truncate">user@capitalgrow.co.in</span>
+                  <span className="text-[10px] text-cg-blue font-bold">User@123</span>
+                </button>
+              </div>
+              <div className="text-[10px] text-center text-cg-muted">
+                (Click either box above to fill credentials instantly)
+              </div>
             </div>
 
             <p className="text-center text-xs text-cg-muted mt-8">

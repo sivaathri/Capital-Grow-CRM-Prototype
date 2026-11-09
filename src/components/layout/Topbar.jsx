@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Menu, Search, Bell, Mail, ChevronDown, User, LogOut, Settings } from 'lucide-react';
+import { Menu, Search, Bell, Mail, ChevronDown, User, LogOut, Settings, ShieldCheck, UserCheck } from 'lucide-react';
 
 export const Topbar = () => {
   const {
     user,
     logout,
+    switchRole,
     navigate,
     customers,
     followups,
@@ -158,15 +159,7 @@ export const Topbar = () => {
           )}
         </div>
 
-        {/* Message button */}
-        <button
-          type="button"
-          onClick={() => addToast('No new messages', 'ok')}
-          className="p-2.5 text-cg-navy hover:bg-white rounded-xl transition-colors"
-          aria-label="Messages"
-        >
-          <Mail className="w-5 h-5" />
-        </button>
+        
 
         {/* Profile Dropdown */}
         <div ref={profileRef} className="relative">
@@ -186,25 +179,51 @@ export const Topbar = () => {
           </button>
 
           {showProfileMenu && (
-            <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-cg-border rounded-xl shadow-dropdown overflow-hidden z-50 py-1">
-              <button
-                type="button"
-                onClick={() => {
-                  navigate('settings');
-                  setShowProfileMenu(false);
-                }}
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-cg-text hover:bg-cg-light-blue transition-colors text-left"
-              >
-                <Settings className="w-4 h-4 text-cg-muted" />
-                <span>Settings</span>
-              </button>
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-cg-border rounded-xl shadow-dropdown overflow-hidden z-50 py-1.5 text-xs animate-scale-up">
+              <div className="px-4 py-2 border-b border-gray-100 bg-gray-50">
+                <span className="font-bold text-cg-navy block">{user?.name || 'User'}</span>
+                <span className="text-[11px] text-cg-muted block font-mono">{user?.email}</span>
+                <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-cg-blue">
+                  Role: {user?.role || 'User'}
+                </span>
+              </div>
+
+              {/* Quick Role Switcher for demo */}
+              <div className="p-1 border-b border-gray-100">
+                {user?.role?.toLowerCase().includes('admin') ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      switchRole('user');
+                      setShowProfileMenu(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-cg-text hover:bg-amber-50 hover:text-amber-900 rounded-lg transition-colors text-left"
+                  >
+                    <UserCheck className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Switch to <b>User View</b> (Hide Admin Menus)</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      switchRole('admin');
+                      setShowProfileMenu(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-cg-text hover:bg-blue-50 hover:text-cg-blue rounded-lg transition-colors text-left"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-cg-blue" />
+                    <span>Switch to <b>Admin View</b> (Show All Menus)</span>
+                  </button>
+                )}
+              </div>
+
               <button
                 type="button"
                 onClick={() => {
                   setShowProfileMenu(false);
                   logout();
                 }}
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+                className="w-full flex items-center gap-2.5 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors text-left font-semibold"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Log out</span>

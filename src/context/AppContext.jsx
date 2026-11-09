@@ -7,6 +7,12 @@ export const AppProvider = ({ children }) => {
   // Auth State
   const [user, setUser] = useState(() => {
     const isAuthed = sessionStorage.getItem('cg_auth') === '1' || localStorage.getItem('cg_remember') === '1';
+    const savedUser = sessionStorage.getItem('cg_user') || localStorage.getItem('cg_user');
+    if (savedUser) {
+      try {
+        return JSON.parse(savedUser);
+      } catch {}
+    }
     return isAuthed ? { email: 'admin@capitalgrow.co.in', name: 'Admin', role: 'Super Admin' } : null;
   });
 
@@ -97,27 +103,68 @@ export const AppProvider = ({ children }) => {
 
   // Auth Handlers
   const login = (email, password, remember) => {
-    if (email.trim().toLowerCase() === 'admin@capitalgrow.co.in' && password === 'Admin@123') {
+    const cleanEmail = email.trim().toLowerCase();
+    if (cleanEmail === 'admin@capitalgrow.co.in' && password === 'Admin@123') {
       const userData = { email, name: 'Admin', role: 'Super Admin' };
       sessionStorage.setItem('cg_auth', '1');
+      sessionStorage.setItem('cg_user', JSON.stringify(userData));
       if (remember) {
         localStorage.setItem('cg_remember', '1');
+        localStorage.setItem('cg_user', JSON.stringify(userData));
       } else {
         localStorage.removeItem('cg_remember');
+        localStorage.removeItem('cg_user');
       }
       setUser(userData);
-      addToast('Welcome back, Admin', 'ok');
+      addToast('Welcome back, Admin (Super Admin role)', 'ok');
       navigate('dashboard');
       return true;
     }
+
+    // Support regular user / counselor login
+    if (
+      (cleanEmail === 'user@capitalgrow.co.in' || cleanEmail === 'counselor@capitalgrow.co.in') &&
+      (password === 'User@123' || password === 'Admin@123')
+    ) {
+      const userData = { email, name: 'Meena R', role: 'Staff / Counselor' };
+      sessionStorage.setItem('cg_auth', '1');
+      sessionStorage.setItem('cg_user', JSON.stringify(userData));
+      if (remember) {
+        localStorage.setItem('cg_remember', '1');
+        localStorage.setItem('cg_user', JSON.stringify(userData));
+      } else {
+        localStorage.removeItem('cg_remember');
+        localStorage.removeItem('cg_user');
+      }
+      setUser(userData);
+      addToast('Logged in as Meena R (User role - Payments & User Mgmt restricted)', 'ok');
+      navigate('dashboard');
+      return true;
+    }
+
     return false;
+  };
+
+  const switchRole = (roleType) => {
+    let userData;
+    if (roleType === 'user' || roleType === 'counselor') {
+      userData = { email: 'user@capitalgrow.co.in', name: 'Meena R', role: 'Staff / Counselor' };
+      addToast('Switched to User role (Payments & User Management are now hidden)', 'ok');
+    } else {
+      userData = { email: 'admin@capitalgrow.co.in', name: 'Admin', role: 'Super Admin' };
+      addToast('Switched to Admin role (Payments & User Management are now visible)', 'ok');
+    }
+    sessionStorage.setItem('cg_user', JSON.stringify(userData));
+    setUser(userData);
   };
 
   const logout = async () => {
     const confirmed = await confirm('Log out?', 'You will need to sign in again to continue.');
     if (confirmed) {
       sessionStorage.removeItem('cg_auth');
+      sessionStorage.removeItem('cg_user');
       localStorage.removeItem('cg_remember');
+      localStorage.removeItem('cg_user');
       setUser(null);
       window.location.hash = '';
     }
@@ -391,6 +438,7 @@ export const AppProvider = ({ children }) => {
         sanctionLoan,
         savePayoutDetails,
         changeRecordStatus,
+        switchRole,
         resetToSeedData,
         followups,
         simulateCall,
