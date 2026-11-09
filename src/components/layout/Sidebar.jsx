@@ -22,7 +22,8 @@ const NAV_ITEMS = [
     icon: FileText,
     subItems: [
       { id: 'education-loan', label: 'Education Loan' },
-      { id: 'insurance', label: 'Insurance' }
+      { id: 'insurance', label: 'Insurance' },
+       { id: 'Loans', label: 'Loans' }
     ]
   },
   { id: 'applications', label: 'Loan Applications', icon: FileText },
