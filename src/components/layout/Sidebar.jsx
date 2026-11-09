@@ -28,13 +28,13 @@ const NAV_ITEMS = [
     ]
   },
   { id: 'login-status', label: 'Login Status Details', icon: Building2 },
-  { id: 'applications', label: 'Loan Applications', icon: FileText },
+  
   { id: 'banks', label: 'Bank Management', icon: Landmark },
-  { id: 'followups', label: 'Follow-ups & Reminders', icon: Clock },
+ 
   { id: 'payments', label: 'Payments', icon: CreditCard },
-  { id: 'reports', label: 'Reports', icon: BarChart3 },
+  
   { id: 'users', label: 'User Management', icon: Users },
-  { id: 'settings', label: 'Settings', icon: Settings }
+ 
 ];
 
 export const Sidebar = () => {
