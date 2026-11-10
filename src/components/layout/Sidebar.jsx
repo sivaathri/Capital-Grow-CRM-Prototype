@@ -11,6 +11,9 @@ import {
   Settings,
   ChevronDown,
   Building2,
+  GraduationCap,
+  Shield,
+  Coins,
   X
 } from 'lucide-react';
 
@@ -22,9 +25,9 @@ const NAV_ITEMS = [
     label: 'Enquiries',
     icon: FileText,
     subItems: [
-      { id: 'education-loan', label: 'Education Loan' },
-      { id: 'insurance', label: 'Insurance Advisory' },
-      { id: 'loans', label: 'Loans' }
+      { id: 'education-loan', label: 'Education Loan', icon: GraduationCap },
+      { id: 'insurance', label: 'Insurance Advisory', icon: Shield },
+      { id: 'loans', label: 'Loans', icon: Landmark }
     ]
   },
   { id: 'login-status', label: 'Login Status Details', icon: Building2 },
@@ -194,12 +197,14 @@ export const Sidebar = () => {
 
                 {/* Submenu */}
                 {!isSidebarCollapsed && item.subItems && isSubOpen && (
-                  <div className="pl-9 pr-2 py-1 space-y-1">
+                  <div className="pl-6 pr-2 py-1 space-y-1">
                     {item.subItems.map((sub) => {
                       const isSubActive =
                         route.page === sub.id ||
                         (sub.id === 'loans' && (route.page === 'loans' || route.page === 'Loans')) ||
                         (sub.id === 'insurance' && (route.page === 'insurance' || route.page === 'insurance-advisory'));
+
+                      const SubIcon = sub.icon;
 
                       return (
                         <button
@@ -209,13 +214,17 @@ export const Sidebar = () => {
                             navigate(sub.id);
                             setIsMobileNavOpen(false);
                           }}
-                          className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                             isSubActive
-                              ? 'bg-white/20 text-white font-semibold'
+                              ? 'bg-cg-orange text-white shadow-orange font-bold'
                               : 'text-blue-100 hover:text-white hover:bg-white/10'
                           }`}
                         >
-                          <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
+                          {SubIcon ? (
+                            <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-white' : 'text-orange-300'}`} />
+                          ) : (
+                            <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
+                          )}
                           <span className="truncate">{sub.label}</span>
                         </button>
                       );
