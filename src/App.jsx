@@ -5,6 +5,7 @@ import { Shell } from './components/layout/Shell';
 import { DashboardPage } from './pages/DashboardPage';
 import { CustomersPage } from './pages/CustomersPage';
 import { EducationLoanPage } from './pages/EducationLoanPage';
+import { LoansPage } from './pages/LoansPage';
 import { InsurancePage } from './pages/InsurancePage';
 import { LoginStatusPage } from './pages/LoginStatusPage';
 import { PaymentsPage } from './pages/PaymentsPage';
@@ -53,9 +54,10 @@ export const App = () => {
         return <CustomersPage />;
       case 'education-loan':
       case 'enquiries':
-      case 'Loans':
-      case 'loans':
         return <EducationLoanPage />;
+      case 'loans':
+      case 'Loans':
+        return <LoansPage />;
       case 'insurance':
       case 'insurance-advisory':
         return <InsurancePage />;
